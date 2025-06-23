@@ -25,12 +25,10 @@ website:
         href: "index.qmd" 
       - text: "Introduction"
         href: "introduction.qmd"
-      - section: "Basics"
-        contents:
-          - text: "Technology Adoption"
-            href: "techAdopt.qmd"
-          - text: "Mobile Banking"
-            href: "mobileBanking.qmd"
+      - text: "Technology Adoption"
+        href: "techAdopt.qmd"
+      - text: "Mobile Banking"
+        href: "mobileBanking.qmd"
       - section: "Projects"
         contents:
         - section: "Project 1. SLR"
