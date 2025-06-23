@@ -10,10 +10,6 @@ format:
     number-sections: true
     fig-width: 6
     fig-height: 4
-    math:
-      engine: mathjax
-bibliography: references.bib
-csl: apa.csl
 ---
 
 <style>

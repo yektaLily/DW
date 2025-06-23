@@ -106,7 +106,7 @@ These steps enhance m-banking adoption and effectiveness.
 
 Following the work of the previous study, I focused on intrinsic factors. 
 One of the factors I found to be under-explored in the literature was mental health.  
-Psychological factors are comparatively less-studied across the m-banking literature @venkateshConsumerAcceptanceUse2012, @zouInvestigatingNonlinearConditional2023, and @tiwariExaminingImpactCustomers2021f.
+Psychological factors are comparatively less-studied across the m-banking literature @venkateshConsumerAcceptanceUse2012,  @zouInvestigatingNonlinearConditional2023, and @tiwariExaminingImpactCustomers2021f.
 I verified this further doing a quick preliminary search on Web-of-Science. 
 Using the following search query returned $1,067$ studies with no filters set on the results:
 

@@ -15,6 +15,8 @@ format:
       error: false
       results: 'asis'
     #css: style.css
+bibliography: references.bib
+csl: apa.csl
 ---
 <!-- CSS CHANGES -->
 <style>
@@ -93,24 +95,7 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
-# from sklearn.ensemble import RandomForestClassifier
-# from sklearn.metrics import classification_report
-# from sklearn.naive_bayes import MultinomialNB
-# from sklearn.neighbors import NearestNeighbors
-# from sklearn.preprocessing import LabelEncoder
-# from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
-# from sklearn.naive_bayes import (
-#     BernoulliNB,
-#     ComplementNB,
-#     MultinomialNB,
-# )
-# from sklearn.neighbors import KNeighborsClassifier
-# from sklearn.tree import DecisionTreeClassifier
-# from sklearn.ensemble import RandomForestClassifier
-# from sklearn.linear_model import LogisticRegression
-# from sklearn.neural_network import MLPClassifier
-# from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-# from sklearn.decomposition import LatentDirichletAllocation
+
 
 
 # GENSIM imports 
@@ -141,17 +126,6 @@ from numpy import triu
 #from scipy.linalg.special_matrices import triu
 from scipy.sparse import csr_matrix
 
-
-
-# TRANSFORMERS 
-#import torch
-#import tensorflow as tf
-#from transformers import BertTokenizer, BertModel
-#from tensorflow.keras.models import Sequential
-#from tensorflow.keras.preprocessing.text import Tokenizer
-#from tensorflow.keras.preprocessing.sequence import pad_sequences
-#from tensorflow.keras.layers import Dense, Embedding, LSTM, SpatialDropout1D
-#from tensorflow.keras.layers import LeakyReLU
 
 import fitz  # PyMuPDF
 
@@ -535,19 +509,32 @@ print_top_50_words(database_corpus_unigrams_v1, database_dictionary_unigrams_v1)
 > use 1710.4405813502553
 > 
 > al 1500.5918177863637
+> 
 > et 1495.2598944189729
+> 
 > studi 1254.889113401414
+> 
 > servic 1177.5025518831014
+> 
 > research 1155.4801330260996
+> 
 > model 1093.757883374598
+> 
 > intent 1085.622080362571
+> 
 > inform 1035.95718724093
+> 
 > market 1032.669725701611
+> 
 > manag 1020.5243612360091
+> 
 > custom 1011.465319080724
+> 
 > perceiv 975.0912634817644
+> 
 > consum 959.7309079460276
-and many more 
+
+and many more...
 
 Bi-grams over the entire database: 
 
@@ -556,17 +543,28 @@ print_top_50_words(database_corpus_bigrams_v1, database_dictionary_bigrams_v1)
 ```
 
 > et al 1065.4586868386625
+> 
 > intern market 424.5870797007975
+> 
 > inform manag 324.417783324221
+> 
 > http doiorg 272.8802285987675
+> 
 > inform system 259.07233958915
+> 
 > intent use 247.3467671477514
+> 
 > behavior intent 207.71672202444856
+> 
 > eas use 206.32538882113823
+> 
 > comput human 183.94284111390388
+> 
 > perceiv use 183.0881496709403
+> 
 > human behavior 179.3628870311971
-and many more
+
+and many more...
 
 Build an LDA model, but I want to test anywhere from 5 to 15 topic numbers, so I'll leave this as a parameter to pass to this function. 
 I left the other parameters as is. 
@@ -606,6 +604,7 @@ Perplexity, not that difficult, it's how off you are.
 So, you want higher coherence, and lower perplexity. 
 It's easier to just focus on one of them. 
 But for practice, I did both! 
+
 ```{python chunk_theme_29}
 def calculate_perplexity(model, corpus_):
     perplexity = model.log_perplexity(corpus_)
@@ -652,6 +651,7 @@ As in, for example, topic number 5 gives the highest coherence but also the high
 Which do you choose? 
 Well, I decided they're both equally as important, so I come up with a score for each topic number that's just the weighted average of coherence and perplexity. 
 Or, save yourself the headache and just use one metric. 
+
 ```{python chunk_theme_31}
 def find_best_model(models_df):
     print("Number of topics with the maximum Coherence is ", models_df.loc[models_df['Coherence'].idxmax(), 'Num_Topics'])
@@ -734,25 +734,45 @@ unigram_best_row_v1 = find_best_model(unigram_model_comparison_v1)[0]
 unigram_best_n_topics_v1 = find_best_model(unigram_model_comparison_v1)[1]
 ```
 
+
 > Number of topics with the maximum Coherence is  7
+> 
 > Number of topics with the minimum Perplexity is  15
+> 
 > Num_Topics               12.000000
+> 
 > Coherence                 0.454530
+> 
 > Perplexity               -9.011387
+> 
 > Normalized_Perplexity     0.636029
+> 
 > Normalized_Coherence      0.782020
+> 
 > Inverted_Perplexity       0.363971
+> 
 > Score                     0.572996
+> 
 > Name: 7, dtype: float64
+> 
 > Number of topics with the maximum Coherence is  7
+> 
 > Number of topics with the minimum Perplexity is  15
+> 
 > Num_Topics               12.000000
+> 
 > Coherence                 0.454530
+> 
 > Perplexity               -9.011387
+> 
 > Normalized_Perplexity     0.636029
+> 
 > Normalized_Coherence      0.782020
+> 
 > Inverted_Perplexity       0.363971
+> 
 > Score                     0.572996
+> 
 > Name: 7, dtype: float64
 
 
@@ -799,16 +819,27 @@ bigram_best_n_topics_v1 = find_best_model(bigram_model_comparison_v1)[1]
 ```
 
 > Number of topics with the maximum Coherence is  15
+> 
 > Number of topics with the minimum Perplexity is  15
+> 
 > Num_Topics    15.000000
+> 
 > Coherence      0.582336
+> 
 > Perplexity   -24.581214
+> 
 > Name: 10, dtype: float64
+> 
 > Number of topics with the maximum Coherence is  15
+> 
 > Number of topics with the minimum Perplexity is  15
+> 
 > Num_Topics    15.000000
+> 
 > Coherence      0.582336
+> 
 > Perplexity   -24.581214
+> 
 > Name: 10, dtype: float64
 
 ```{python chunk_theme_39}

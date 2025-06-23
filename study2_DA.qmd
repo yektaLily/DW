@@ -15,6 +15,8 @@ format:
       error: false
       results: 'asis'
     #css: style.css
+bibliography: references.bib
+csl: apa.csl
 ---
 <!-- CSS CHANGES -->
 <style>
@@ -67,9 +69,7 @@ The following is a step-by-step on the coding and analysis of the project.
 ### Importing Libraries 
 Note that not all libraries may be utilized. 
 The most important ones are `dplyr`, `lme4`, `tidyr`, `ggplot2`, `psych`, `corrr`, `haven`, `marginaleffects` and `margins` and any related libraries to these. 
-```{r chunk_2DA_1}
-#| echo: false 
-
+```{r }
 library(corrr)
 library(psych)
 library(lavaan)
@@ -134,7 +134,9 @@ I first started by reading the entire PUMF file available.
 This gives you information on how the survey was set up, why, and how things were measured. 
 Then, I looked at the individual survey questions to see the available data, and how they were measured. 
 In general, questions are measured numerically were answeres follow as such:
+
 > Yes : 1, No : 2, Valid Skip: 6, Don't Know: 7, Refusal: 8, Not Stated: 9 
+
 Of course this differs question-by-question as some questions have other answer categories and some questions (which were note used in my study) asked for numerical input from the participants (like how much did you spend online last year).
 To help readers understand the data, I will include the question exactly as it appears in the CIUS 2020 PUMF Data Dictionary with corresponding answer choices and codes. 
 These will be in a blue-bordered box, and will include the Variable name (on the PUMF file), Concept, Question Body and Answers. 
@@ -162,7 +164,7 @@ You need the `haven` package to read SAS files.
 However, this file is 150MB in size and since I am uploading the code in my GitHub repository, I am not able to use the SAS file. 
 So I've saved the data in a `.csv` file with only the columns I will need. 
 This is how you'd read a SAS file: 
-```{r chunk_2DA_2}
+```{r }
 #| eval: false 
 ds20 <- read_dta("data/cius2020_2022nov18_en.dta")
 ds <- ds20
@@ -170,7 +172,7 @@ ds <- ds20
 ```
 
 Instead, I run this: 
-```{r chunk_2DA_3}
+```{r }
 ds10 <- read.csv("ds.csv")
 ds <- ds10 
 ```
@@ -206,7 +208,7 @@ Did you use:
 :::::
 
 
-```{r chunk_2DA_4}
+```{r }
 ds <- ds %>% 
     mutate(
         devSM = case_when(
@@ -284,7 +286,7 @@ As you can see, this one is no longer just a yes/no question, but has a few cate
 Since I'm thinking of tracking "dependence", it makes sense that the more frequent checking gets a higher value. 
 So, this is how I code this variable: 
 
-```{r chunk_2DA_5}
+```{r }
 ds <- ds %>%
     mutate(
         #timeline : past 3 months 
@@ -408,7 +410,7 @@ Would you say:
 Again, since I want to measure mental health in terms of how good or bad a person is, it makes sense that better moods are associated with elevated numbers (so instead of it being coded as 1, Excellent should be coded as 5). 
 
 
-```{r chunk_2DA_6}
+```{r }
 ds <- ds %>% mutate(
     FRISAT = case_when(
         ts_010a == 1 ~ 1, #completely dissatisfied 
@@ -475,7 +477,7 @@ Have you:
 | Not stated | 9 |
 :::::
 
-```{r chunk_2DA_7}
+```{r }
 ds <- ds %>% mutate(
     SNS = case_when(
         ui_010c == 1 ~ 1, # yes 
@@ -562,6 +564,7 @@ Derived from age of persons in the household
 :::
 
 **Note:**  
+
 Refers to current gender which may be different from sex assigned at birth and may be different from what is indicated on legal documents. For data quality and confidentiality reasons, and because of the small population being measured, the dissemination of data according to ’Non binary’ Gender is not possible for this statistical program. So, this release uses a gender variable with only two categories. This variable is derived by looking at a large number of demographic characteristics from the respondent, it allows us to disseminate data on Gender that is reliable and unbiased.
 
 |**Answer Categories**|**Code**|**Frequency**|
@@ -632,6 +635,7 @@ Refers to current gender which may be different from sex assigned at birth and m
 :::
 
 **Note:**  
+
 This derived variable indicates the household composition. It was derived using RRS_Q12 (number of persons in the household), RR_020CA (age of persons in the household) and RR_040AA (relationship of the respondent with the other members of the household).
 
 |**Answer Categories**|**Code**|**Frequency**|
@@ -705,7 +709,7 @@ Landed immigrants are permanent residents who have indicated a year of landing i
 Variable `pumfid` is just a unique identifier. 
 
 
-```{r chunk_2DA_1119}
+```{r }
 ds <- ds %>% mutate(
     id = pumfid,
     province = province, 
@@ -737,7 +741,7 @@ ds <- ds %>% filter(
 
 **Step 5. Selecting The Variables From Data Set**
 
-```{r chunk_2DA_2119}
+```{r }
 ds <- ds %>% 
     dplyr::select(id, 
                   mBanking, SD, FAMSAT, FRISAT, MH, SNS,
@@ -748,21 +752,21 @@ ds <- ds %>%
 ```
 
 Size of the dataset: 
-```{r chunk_2DA_3119}
+```{r }
 dim(ds)
 ```
 
 
 ### EXPLORING DATA 
  
-```{r chunk_2DA_4119}
+```{r }
 psych::describe(ds, type = 2)
 ```
 
 Seems like it's kind of rare for those that use m-banking to have lower MH scores.
 Descriptive statistics:
 
-```{r chunk_2DA_5119}
+```{r }
 ggplot(data    = ds,
        aes(x   = SD,
            y   = wtpg,
@@ -776,19 +780,19 @@ ggplot(data    = ds,
 ```
 
 Checking Na's:
-```{r chunk_2DA_6119}
+```{r }
 sum(is.na(ds))
 ```
 
 
-```{r chunk_2DA_7119}
+```{r }
 glimpse(ds)
 ```
 
 ### Exploring Relations
 Visualizng the relationship between Mental Health and M-banking:
 
-```{r chunk_2DA_8119}
+```{r }
 ggplot(data = ds, aes(x = MH, y = wtpg)) +
             geom_col(
             aes(fill = as.factor(mBanking)), stat = "identity", color = "black", position = position_dodge(0.9)) +
@@ -800,7 +804,7 @@ ggplot(data = ds, aes(x = MH, y = wtpg)) +
 
 MH and controls: AGE, SEX, EMP, EDU, FAM, IMM, INC
 
-```{r chunk_2DA_9, fig.width=15, fig.height=10}
+```{r , fig.width=15, fig.height=10}
 gg_fam <- ggplot(data = ds , aes(MH, fill = as.factor(FAM))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'FAMILY') + fill_palette("Pastel1")
 
 gg_age <- ggplot(data = ds , aes(MH, fill = as.factor(AGE))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'AGE') + fill_palette("Pastel1")
@@ -827,7 +831,7 @@ ggarrange(
 
 MH and other variables: SD, FAMSAT, FRISAT, SNS 
 
-```{r chunk_2DA_10, fig.width=15, fig.height=10}
+```{r, fig.width=15, fig.height=10}
 gg_frisat <- ggplot(data = ds , aes(MH, fill = as.factor(FRISAT))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'FRISAT') + fill_palette("Pastel1")
 
 gg_famsat <- ggplot(data = ds , aes(MH, fill = as.factor(FAMSAT))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'FAMSAT') + fill_palette("Pastel1")
@@ -848,7 +852,7 @@ ggarrange(
 #### Correlation Matrix 
 All variables 
 
-```{r chunk_2DA_11}
+```{r 1}
 sle <- ds %>% dplyr::select(mBanking, SD, FAMSAT, FRISAT, SNS, AGE, SEX, EMP, EDU, FAM, INC, MH)
 corM <- Hmisc::rcorr(as.matrix(sle))
 reg_corM <- as.matrix(corM$r)
@@ -863,7 +867,7 @@ corrplot::corrplot(reg_corM, p.mat = corM$P, method = "color", type = "upper", i
 
 `FRISAT` and `FAMSAT` are obviously highly correlated. I'll combine them into a new variable called `RS` for Relationship satisfaction.
 
-```{r chunk_2DA_12}
+```{r }
 ds <- ds %>% mutate(
     RS = FAMSAT + FRISAT
 )
@@ -872,7 +876,7 @@ ds <- ds %>% mutate(
 
 ##### Showing that it's ok to replace FAMSAT + FRISAT = RS 
 Using a Likelihood Ratio Test: 
-```{r chunk_2DA_13}
+```{r }
 model_famsatfrisat <- glm(mBanking ~ FAMSAT + FRISAT, 
                           family = "binomial",
                           data = ds)
@@ -889,7 +893,7 @@ It's better to keep one variable instead of two (simpler model is better).
 
 Continuing with our visualizations, let's see the changes to SD across MH scores. 
 
-```{r chunk_2DA_14}
+```{r }
 ggplot(data  = ds, aes(x = MH, y = SD))+ geom_point(size = 1.2, alpha = .5, position = "jitter") + 
     geom_smooth(method = lm,
               se     = FALSE, 
@@ -905,7 +909,7 @@ This intuitively makes sense.
 Adding more nuance to this graph, I can see how this relationship changes for people who adopted m-banking and those that didn't. 
 It seems the two relationships are almost identical, at least in direction. 
 
-```{r chunk_2DA_16}
+```{r }
 ggplot(data    = ds,
        aes(x   = MH,
            y   = SD,
@@ -934,7 +938,7 @@ Let's look at the differences in familial relationship satisfaction for these tw
 For m-banking adopters, it seems that those with better mental health (3 or higher) are completely satisfied with their family relationships (blue bar). 
 On the other hand, those that haven't adopted m-banking are either less satisfied or completely unsatisfied (`MH = 5, mBanking = 0` group's largest bar is red, which is `FAMSAT = 1`, the lowest score).
                   
-```{r chunk_2DA_18, fig.width=15, fig.height=4}
+```{r, fig.width=15, fig.height=4}
 ds1 <- ds %>% filter(mBanking == 1)
 ds2 <- ds %>% filter(mBanking == 0)
 
@@ -961,7 +965,7 @@ This is simply a somewhat visible pattern that tells me it's worth looking into 
 We do the same type of visualization, now measuring social media use. 
 Surprisingly, social media use goes up with better mental health scores for adopters but decreases for non-adopters. 
 
-```{r chunk_2DA_19,fig.width=10, fig.height=4}
+```{r, fig.width=10, fig.height=4}
 gg7 <- ggplot(data = ds1, aes(x = MH, y = wtpg)) +
             geom_col(
             aes(fill = as.factor(SNS)), stat = "identity", color = "black", position = position_dodge(0.9)) +
@@ -982,7 +986,7 @@ ggarrange(gg7, gg8, ncol = 2, labels = c("mBanking = 1", "mBanking = 0"))
 Lastly, we do the same with smartphone dependency. 
 It seems that non-adopters are actually more dependent on their smartphones and also (with better mental health).
 
-```{r chunk_2DA_20,fig.width=15, fig.height=4}
+```{r ,fig.width=15, fig.height=4}
 gg9 <- ggplot(data = ds1, aes(x = MH, y = wtpg)) +
             geom_col(
             aes(fill = as.factor(SD)), stat = "identity", color = "black", position = position_dodge(0.9)) +
@@ -1008,7 +1012,7 @@ I prepare the data for modeling by:
 2. I convert some variables to factors, which are categorical variables with different levels and define various reference points for each for easier modeling practices 
 3. Note that if a variable's reference level is `l`, then all the logistic regression coefficients for other levels are in comparison to level `l`
 
-```{r chunk_2DA_21}
+```{r }
 ds <- ds %>% mutate(
     MH_c = MH - mean(MH), 
     SD_c = SD - mean(SD),
@@ -1057,7 +1061,7 @@ There are multiple ways to do it:
 * Use a survey-specific module like the `survey` package developed by [Thomas Lumley](https://www.rdocumentation.org/packages/survey/versions/4.4-2) to account for survey methods, stratification, framing, sampling strategy and weights. 
 The way you'd do this is: 
 
-```{r chunk_2DA_surveyEx}
+```{r}
 #| eval: false 
 
 library(survey)
@@ -1080,7 +1084,7 @@ summary(model1_svy, correlation = FALSE, df.resid=NULL)
 
 Let's visualize the distribution of m-banking adoption across provinces for all `MH` scores: 
 
-```{r chunk_2DA_22}
+```{r }
 ds <- ds %>% 
     mutate(
         province_f_coded = fct_recode(
@@ -1098,7 +1102,7 @@ ds <- ds %>%
     )
 ```
 
-```{r chunk_2DA_23}
+```{r }
 ggplot(ds, aes(province_f_coded, mBanking, color = as.factor(MH))) +
                   stat_summary(fun = mean, geom = "point") +
                   stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.4) +
@@ -1130,7 +1134,7 @@ Where $D$ is a dummy variable representing the case that the value of the variab
 For example, $D_{SNS_0}$ gets a $1$ in every cell where `SNS = 0`. 
 This is modeled in R: 
 
-```{r chunk_2DA_26}
+```{r 6}
 model1 <- glm(
     mBanking ~ MH_c + SD_c + SNS_factor_use + RS_c + AGE_c + SEX_factor_Fem + EMP_factor_Emp + EDU_c + FAM_factor_2 + IMM_factor_non + INC_c,
     data = ds,
@@ -1154,7 +1158,7 @@ $$
 This is where `province` only affects the intercept (m-banking). 
 I used the `glmer` function from the `lme4` package. 
 
-```{r chunk_2DA_27}
+```{r 7}
 model2 <- glmer(
     mBanking ~ MH_c + SD_c + SNS_factor_use + RS_c + AGE_c + SEX_factor_Fem + EMP_factor_Emp + EDU_c + FAM_factor_2 + IMM_factor_non + INC_c + (1 | province),
     data = ds,
@@ -1184,7 +1188,7 @@ This model may not converge (it does in this case, but it takes about 30 minutes
 An easier model that considers random effects may be to just include the random effect on the primary variable `MH` and its related constructs (`model4`). 
 
 
-```{r chunk_2DA_28}
+```{r }
 #| eval: false 
 model3 <- glmer(
     mBanking ~ MH_c + SD_c + SNS_factor_use + RS_c + AGE_c + SEX_factor_Fem + EMP_factor_Emp + EDU_c + FAM_factor_2 + IMM_factor_non + INC_c + 
@@ -1196,7 +1200,7 @@ model3 <- glmer(
 ```
 
 For faster speeds, I'll test everything with this model (random):
-```{r chunk_2DA_29} 
+```{r } 
 model4 <- glmer(
     mBanking ~ MH_c + SD_c + SNS_factor_use + RS_c + AGE_c + SEX_factor_Fem + EMP_factor_Emp + EDU_c + FAM_factor_2 + IMM_factor_non + INC_c + 
     (1 + MH_c + SD_c + SNS_factor_use + RS_c | province),
@@ -1206,6 +1210,7 @@ model4 <- glmer(
 ```
 
 ### Comparing models 
+
 Since `model3` doesn't run fast and I am using `Quarto` for rendering the code blocks, I decided to use `model4` for comparisons. 
 The values here will be different from the paper, but the ideas are the same. 
 To pick the best model I do: 
@@ -1215,7 +1220,7 @@ To pick the best model I do:
     * Unfortunately, the Hausman test requires the `plm` package and panel data. To avoid messing the data up again, I coded the calculations manually based on the Hausman formula. This is referenced in the paper. 
   * If you can't reject $H_0$ of LR test, i.e., `model1` wins, we should just use that as it's simpler 
 
-```{r chunk_2DA_30}
+```{r }
 test_performance(model1, model2)
 ```
 
@@ -1224,7 +1229,8 @@ Since `model2` won, we now compare it with `model4`.
 Hausman test for fixed effects in R is a bit tricky, so, I did it manually following the formula:
 
 1. Extract per-group (province) coefficients for both models and convert them to data frames 
-```{r chunk_2DA_31}
+
+```{r }
 coefs_fixed <- coef(model2)
 coefs_rando <- coef(model4)
 
@@ -1234,14 +1240,16 @@ coefs_rando_df <- as.data.frame(coefs_rando$province)
 ```
 
 2. Subtract Random Effects model coefficients from Fixed Effect model, per province. This gives you the core term of the Hausman test: 
-```{r chunk_2DA_32}
+   
+```{r }
 coefs_diff <- coefs_fixed_df - coefs_rando_df
 coef_diffs_matrix <- as.matrix(coefs_diff)
 
 ```
 
 3. Estimate the difference in the variance-covariance matrices of the coefficient estimates. 
-```{r chunk_2DA_33}
+   
+```{r }
 V_diff <- as.matrix(vcov(model2) - vcov(model4))
 
 ```
@@ -1253,7 +1261,7 @@ H = (\hat{\beta_{F}} - \hat{\beta_{R}}) \cdot V^{-1} \cdot (\hat{\beta_{F}} - \h
 $$
 
 Just checking that the matrix multiplications make sense: 
-```{r chunk_2DA_34}
+```{r }
 dim(t(coef_diffs_matrix))
 dim(solve(V_diff))
 dim(coef_diffs_matrix)
@@ -1263,7 +1271,7 @@ dim(coef_diffs_matrix)
 
 They do! So, calculate $H$:
 
-```{r chunk_2DA_35}
+```{r }
 H <- coef_diffs_matrix %*% solve(V_diff) %*% t(coef_diffs_matrix)
 
 ```
@@ -1271,30 +1279,30 @@ H <- coef_diffs_matrix %*% solve(V_diff) %*% t(coef_diffs_matrix)
 
 This is the actual critical $\chi^2$ value at degrees of freedom 13 (for 14 covariates), in fact, I can check: 
 
-```{r chunk_2DA_36}
+```{r }
 qr(V_diff)$rank
 
 ```
 
-```{r chunk_2DA_37}
+```{r }
 chisq_critical <- qchisq(p = .05, df = 13, lower.tail = FALSE)
 chisq_critical
 ```
 
 If $H1 > \chi^2$ then reject the null hypothesis that says the fixed model is better.
-```{r chunk_2DA_38}
+```{r }
 H > chisq_critical #reject H0: the fixed model is better.  
 ```
 
 The p-value: 
-```{r chunk_2DA_39}
+```{r}
 pchisq(H, df = 13, lower.tail = FALSE)
 ```
 
 Ok, we can't reject this hypothesis - therefore, the fixed model is better. 
 Another way to check:
 
-```{r chunk_2DA_40}
+```{r }
 anova(model2, model4)
 ```
 
@@ -1309,7 +1317,7 @@ Now adding interaction terms to test the hypotheses of study 2, which are:
 * Social Media use moderates the effect of Mental Health on adoption.
 
 
-```{r chunk_2DA_41}
+```{r }
 model2_int <- glmer(
     mBanking ~ MH_c + SD_c + SNS_factor_use + RS_c + AGE_c + SEX_factor_Fem 
     + EMP_factor_Emp + EDU_c + FAM_factor_2 + IMM_factor_non + INC_c 
@@ -1322,7 +1330,7 @@ model2_int <- glmer(
 
 Printing both odds ratios and log-odds versions using two different summary functions: 
 
-```{r chunk_2DA_42}
+```{r }
 summ(
     model2,
     scale = F,
@@ -1336,11 +1344,11 @@ summ(
 )
 ```
 
-```{r chunk_2DA_43}
+```{r }
 summary(model2)
 ```
 
-```{r chunk_2DA_44}
+```{r }
 summ(
     model2_int,
     scale = F,
@@ -1355,14 +1363,14 @@ summ(
 ```
 
 
-```{r chunk_2DA_45}
+```{r }
 summary(model2_int)
 ```
 
 
 Also calculating the confidence interval for the variances of each model (we should really only care about the intercept variance, maybe MH):
 
-```{r chunk_2DA_46}
+```{r }
 #| eval: false 
 round(confint(model2),3)
 ```
@@ -1371,7 +1379,7 @@ round(confint(model2),3)
 
 And the random effects for provinces (for visualization later):
 
-```{r chunk_2DA_47}
+```{r }
 #| eval: false 
 ranefs_ <- ranef(model2)
 ```
@@ -1380,19 +1388,19 @@ ranefs_ <- ranef(model2)
 
 First, let's see which model is better: 
 
-```{r chunk_2DA_48}
+```{r }
 anova(model2, model2_int)
 
 ```
 
-```{r chunk_2DA_49}
+```{r }
 test_performance(model2, model2_int)
 ```
 
 Since `model2` is simpler, and they're not different, I'll go with that. 
 Average marginal effects are: 
 
-```{r chunk_2DA_50}
+```{r }
 margins_summary(model2)
 ```
 
@@ -1406,7 +1414,7 @@ Since **Quebec (QC)** and **British Columbia (BC)** have the highest positive ef
 On the opposite end, **Alberta (AB)** and **Newfoundland & Labrador (NL)** have the lowest random effects, meaning adoption is lower in these provinces.
 
 
-```{r chunk_2DA_24}
+```{r }
 prov_ <- c('NL', 'NS', 'NB', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC')
 prov_n <- c(10, 12, 13, 24, 35, 46, 47, 48, 59)
 
@@ -1422,7 +1430,7 @@ provs_fullnames <- c('Newfoundland and Labrador', 'Nova Scotia', 'New Brunswick'
 ```
 
 
-```{r chunk_2DA_25}
+```{r }
 ggplot(data = d_graph, aes(x = prov_n, y = ranefs_, label = c('NL', 'NS', 'NB', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC'))) +   
     geom_point(size = 2, alpha = .5) + 
     geom_text(check_overlap = TRUE) + 

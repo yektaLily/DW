@@ -15,6 +15,8 @@ format:
       error: false
       results: 'asis'
     #css: style.css
+bibliography: references.bib
+csl: apa.csl
 ---
 <!-- CSS CHANGES -->
 <style>
@@ -46,7 +48,7 @@ h2{
 
 ## Part 1. Data Cleaning and Prep 
 The R libraries used for data analysis are as follows: 
-```{r chunk_DA_1} 
+```{r} 
 library(readr)
 library(dplyr)
 library(stringr)
@@ -74,15 +76,14 @@ library(treemapify)
 
 Looking at the data: 
 
-```{r chunk_DA_2}
+```{r}
 df <- read.csv("data/P2_AR_07.csv") 
 glimpse(df)
 ```
 
 Summary statiscs 
 
-```{r chunk_DA_3}
-
+```{r}
 psych::describe(df %>% 
     dplyr::select(Year, Match, Num_Factors, NUM_FAC_NOTSIG, SampleSize)) %>% 
     dplyr::select(vars, n, mean, sd, median, min, max) 
@@ -90,15 +91,13 @@ psych::describe(df %>%
 
 Woah! One paper has 25,000 and that is messing up the sample sizes. Remembering this study's ID:
 
-```{r chunk_DA_4}
-
+```{r}
 df %>% filter(SampleSize == 25000) %>% 
     dplyr::select(ID, Title, SampleSize)
 ```
 
 Setting aside the study with sample size of 25,000:
-```{r chunk_DA_5}
-
+```{r}
 psych::describe(
     df %>% dplyr::select(Year, Match, Num_Factors, NUM_FAC_NOTSIG, SampleSize) %>% 
     filter(SampleSize != 25000)) %>% 
@@ -107,15 +106,13 @@ psych::describe(
 
 Welp! Another large study.
 
-```{r chunk_DA_6} 
-
+```{r} 
 df %>% filter(SampleSize == 21526) %>% 
     dplyr::select(ID, Title, SampleSize)
 ```
 
 Setting aside the study with sample size of 25,000 and the one with 21,52 as they are outliers: 
-```{r chunk_DA_7}
-
+```{r}
 psych::describe(
     df %>% filter(!ID %in% c('p2_59','p2_77')) %>% 
     dplyr::select(ID, Year,Match, Num_Factors, NUM_FAC_NOTSIG, SampleSize)) %>% 
@@ -123,7 +120,7 @@ psych::describe(
 ```
 
 Counting the unique values for each of the columns: 
-```{r chunk_DA_8}
+```{r}
 
 results <- c(
   paste('Number of Unique Values in ID: ', n_distinct(df$ID)),
@@ -147,18 +144,14 @@ cat(results, sep = "\n")
 ```
 
 Checking the sample sizes Without the outliers: 
-```{r chunk_DA_9}
- 
-
+```{r}
 psych::describe(
     df %>% filter(!ID %in% c('p2_59','p2_77')) %>% 
     dplyr::select(SampleSize)) %>% 
     dplyr::select(n, mean, sd, median, min, max) 
 ```
 
-```{r chunk_DA_10}
- 
-
+```{r}
 noOutliers <- df %>% filter(!ID %in% c('p2_59','p2_77'))
 
 quantiles <- quantile(noOutliers$SampleSize, na.rm = T)
@@ -182,9 +175,8 @@ df %>% count(SampleSizeBin)
 ```
 
 Let's calculate the scores for factors that are significant and non-significant:
-```{r chunk_DA_11}
+```{r}
  
-
 F_counts <- df %>%
   dplyr::select(F1:F9) %>%
   unlist() %>%
@@ -231,7 +223,7 @@ Let's visualize how the themes of the papers have changed across the years.
 I will first generate a bar plot that fills the bars at each year (as a categorical factor) with proportions of themes in that year. 
 This is an aggregation that happens under the hood, and using `position = "fill"` will actually make sure all the bars consider things relative to eachother, filling the full 100% of the bar. 
 
-```{r chunk_DA_12}
+```{r}
  
 
 ggplot(df, aes(x = as.factor(Year), fill = DecisionTheme)) +
@@ -245,7 +237,7 @@ ggplot(df, aes(x = as.factor(Year), fill = DecisionTheme)) +
 ``` 
 
 To see how things move/flow over the years, a line chart is a great idea: 
-```{r chunk_DA_13}
+```{r}
  
 
 df %>%
@@ -263,7 +255,7 @@ df %>%
 
 For analysis, I will need to convert the data to long format. Since I want to avoid making it too big, I'll do this separately for each key variable.
 
-```{r chunk_DA_14}
+```{r}
  
 
 theory_long <- df %>% 
@@ -309,7 +301,7 @@ factors_based_on_themes <- df %>% pivot_longer(
 ```
 
 Remove all the empty rows: 
-```{r chunk_DA_15}
+```{r}
  
 
 theory_long <- theory_long %>% filter(THEORY != "") #
@@ -320,13 +312,13 @@ fac_NS_long <- fac_NS_long %>% filter(FAC_NS != "")
 ```
 
 Add factor scores to the long factors and non-signficant factors' data: 
-```{r chunk_DA_16}
+```{r}
  
 
 fac_long <- merge(fac_long, factor_scores, by = "FAC", all = T)
 ```
 
-```{r chunk_DA_17}
+```{r}
  
 
 factor_scores <- factor_scores %>% mutate(FAC_NS = FAC) %>% dplyr::select(FAC_NS,Score_Sig, Score_NOT_Sig)
@@ -354,9 +346,7 @@ Now, I want to explore the interactions between the following properties: **them
 To do this, I will first decide if further investigation is even worthwhile. 
 First, I will use ANOVA to figure out if there are significant differences between groups of the same variable. That is, are themes, theories, methodologies, limitations, technologies, factors, years, research types, sample sizes, and non-significant factors actually different across the dataset? 
 
-```{r chunk_DA_18}
- 
-
+```{r}
 build_anova <- function(nameOfCol){
     counts_df <- df %>% count({{nameOfCol}}) %>% arrange(desc(n))
 
@@ -372,8 +362,8 @@ build_anova <- function(nameOfCol){
 
 ### Paper Themes 
 **Themes** are significantly different. 
-```{r chunk_DA_19}
- 
+
+```{r9}
 
 build_anova(DecisionTheme)
 ```
@@ -381,9 +371,8 @@ build_anova(DecisionTheme)
 So, let's see how they differ across other factors - starting with the ones that do not require pivoting the dataframe! (Year, Tech, SampleSizeBin, ResearchType).
 This time, I will use a $\chi^2$ test of independence. 
 
-```{r chunk_DA_20}
+```{r}
  
-
 combine_data <- function(nameOfCol){
     data_combine <- df %>% 
     group_by(DecisionTheme) %>% 
@@ -394,8 +383,7 @@ combine_data <- function(nameOfCol){
 
 ```
 
-```{r chunk_DA_21}
- 
+```{r}
 
 chisq.test(
     xtabs(n ~ DecisionTheme + Year, 
@@ -415,8 +403,7 @@ The results are:
 
 For the variables that have multiple columns, I first pivot the dataframe and then do the test. For example, this is how I do it for non-significant factors:
 
-```{r chunk_DA_22}
- 
+```{r}
 
 combine_data_longFormat <- function(startCol, stopCol){
     longlong <- df %>% pivot_longer(
@@ -455,8 +442,7 @@ Let's dig deeper.
 
 I first make sure the rows where `Tech` is empty are filled with mobile banking (as the most frequent technology, because the papers were specifically m-banking related).
 
-```{r chunk_DA_23}
- 
+```{r}
 
 df %>% group_by(DecisionTheme) %>% 
     mutate(Tech = ifelse(
@@ -479,7 +465,7 @@ df %>% group_by(DecisionTheme) %>%
 This is because studies on variations of m-banking like m-wallets and smart wearables fall under the Market category, influencing the theme distribution across technologies. 
 To confirm that this effect is driven by Market studies, I exclude them and rerun the above test: 
 
-```{r chunk_DA_24}
+```{r}
 temp_combine_data <- df %>% 
     filter(DecisionTheme != 'market') %>% 
     group_by(DecisionTheme) %>% 
@@ -499,7 +485,7 @@ How about research type?
 First, a little house keeping for the data with respect to research type: I simply rename a few columns for easier visualization. 
 
 #### Paper Themes vs Research Type 
-```{r chunk_DA_25}
+```{r}
 df %>% group_by(DecisionTheme) %>% 
     mutate(
         ResearchType = case_when(
@@ -531,7 +517,7 @@ studies.
 For themes of factors, I will use a different type of visualization (not filling the bars, but wanting to see the difference separately):
 
 #### Paper Themes vs Sig/Non-Significant Factors
-```{r chunk_DA_26}
+```{r}
 longlong <- df %>% pivot_longer(
         cols = F1_THEME:F9_THEME,
         names_to = "NAMES",
@@ -569,7 +555,7 @@ Ok, I'm not interested in seeing if there are differences in how many times fact
 First, let's merge the long data on factor and non-significant factors with factor_scores datasets. 
 The factor scores were the counts of how many times each factor appeared across the literature as significant/non-significant. 
 
-```{r chunk_DA_27}
+```{r}
 longlong_fac <- df %>% pivot_longer(
     cols = F1:F9,
     names_to = "NAMES",
@@ -587,7 +573,7 @@ df_merged_nonsigfac <- longlong_nonsigfac %>% left_join(factor_scores, by = "FAC
 ```
 
 The significance score across themes: 
-```{r chunk_DA_28}
+```{r}
 ggplot(df_merged_fac, 
     aes(x = DecisionTheme, y = Score_Sig, 
         fill = DecisionTheme)) +
@@ -610,7 +596,7 @@ Since most medians are high and IQR's are similar, no theme strongly dominates i
 Market studies might have slightly lower scores than others, indicating device and technology specific factors may be needed. 
 I can also find out which factors have a low significance score for each theme:
 
-```{r chunk_DA_29}
+```{r}
 head(df_merged_fac %>% filter(Score_Sig <= 0.5) %>% dplyr::select(FAC_NS, DecisionTheme))
 ```
 
@@ -627,7 +613,7 @@ This indicates that age and education are either not frequently used in Demograp
 
 The non-significance score across themes: 
 
-```{r chunk_DA_30}
+```{r}
 ggplot(df_merged_nonsigfac,
     aes(x = DecisionTheme, y = Score_NOT_Sig, 
         fill = DecisionTheme)) +
@@ -645,7 +631,7 @@ Some themes (e.g., Perceptive and Demographic) show high variability in non-sign
 The presence of outliers suggests that certain studies had unusually high numbers of non-significant factors.
 The outliers are factors with non-significant scores of higher than 0.5 (appearing more than half of their total frequency as non-significant).
 
-```{r chunk_DA_31}
+```{r}
 head(df_merged_nonsigfac %>% filter(Score_NOT_Sig > 0.5) %>% dplyr::select(FAC_NS, DecisionTheme))
 ```
 
@@ -654,7 +640,7 @@ Social Value, Conditional Value, Triability (Demographic), Perceived Usefulness 
 
 An interesting observation is social values being an outlier in demographic studies for both significance and non-significane score.
 
-```{r chunk_DA_32}
+```{r}
 glimpse(df %>% filter(F1 == "soc_val" | F2 == "soc_val" | F3 == "soc_val" | F4 == "soc_val" | F5 == "soc_val" | F6 == "soc_val" | F7 == "soc_val" | F8 == "soc_val" | F9 == "soc_val"))
 ```
 
@@ -668,7 +654,7 @@ Identifying these gaps can provide valuable insights for future research and bro
 
 I can test whether certain themes are more likely to have non-significant factors: 
 
-```{r chunk_DA_33}
+```{r}
 kruskal.test(Score_NOT_Sig ~ DecisionTheme, data = df_merged_nonsigfac)
 ```
 
@@ -677,7 +663,7 @@ If $p < 0.05$, it confirms that certain themes are more likely to have non-signi
 I can also identify which specific factors within perceptive or demographic themes are most non-significant.
 Check interaction effects (e.g., Does the study's research method influence significance?).
 
-```{r chunk_DA_34}
+```{r}
 longlongfactors <- df %>% pivot_longer(
     cols = F1:F9,
     names_to = "NAMES",
@@ -688,7 +674,7 @@ print("Unique Decision Themes: \n")
 unique(df$DecisionTheme)
 ```
 
-```{r chunk_DA_35}
+```{r}
 head(longlongfactors %>% 
     group_by(DecisionTheme) %>%
     count(FAC) %>% arrange(desc(n)) %>% 
@@ -700,7 +686,7 @@ In the paper, I actually wanted to find the factors that appeared the least numb
 So, just take out the `desc()` arrangement and then look for the papers that have used certain factors (only once). 
 For example, **agreeableness** was used only once.
 Let's see which personal-themed paper used it: 
-```{r chunk_DA_36}
+```{r}
 df %>% pivot_longer(
     cols = F1:F9,
     names_to = "NAMES",
@@ -715,7 +701,7 @@ This was then referenced in the paper I wrote.
 The same entire process was repeated for **Theory**, **Methods**, **Limitations**, **Factors** and **Non-significant Factors**. 
 
 ### Foundational Theories 
-```{r chunk_DA_37}
+```{r}
 counts_dflong <- theory_long %>% 
         filter(THEORY != "" & THEORY != " "
             & !is.na(THEORY)) %>% 
@@ -734,7 +720,7 @@ Great, There's statistically significant differences in the distribution of Theo
 I follow the same idea above, except this time, use the `theory_long` in building the combined data. 
 For example, for Year: 
 
-```{r chunk_DA_38}
+```{r}
 build_combine_long <- function(df, colName1, colName2){
     data_combine <- df %>% group_by({{colName1}}) %>% count({{colName2}}) 
 
@@ -771,13 +757,13 @@ Let's dig deeper.
 
 #### Theory vs Method 
 There are a large number of unique methods in the data, $41$ to be exact: 
-```{r chunk_DA_39}
+```{r}
 n_distinct(method_long$METHOD)
 ```
 
 Let's visualize this. 
 
-```{r chunk_DA_40}
+```{r}
 longlong_theorymethod <- theory_long %>%
     pivot_longer(
         cols = METHOD1:METHOD4,
@@ -816,7 +802,7 @@ ggplot(longlong_theorymethodGroup,
 The `guides()` pipe helps with the guild legend on the bottom of the figure (same color as the cells). 
 This doesn't help much, so I'll set aside the top methods and the top theories: 
 
-```{r chunk_DA_41}
+```{r}
 longlongGroup2 <- longlong_theorymethod %>% 
     group_by(THINGS) %>% filter(
         THINGS != "SEM" & THINGS != "PLS SEM" & THINGS != "PLS"& 
@@ -852,7 +838,7 @@ Whereas older models like TAM, DOI, TPB were the ones using confirmatory factor 
 #### Theory vs Limits  
 For limits, I'm setting aside the least referenced (ttest) and the limit in scope that is captured in other limits. 
 Additionally, let's set aside the two top theories TAM and UTAUT. 
-```{r chunk_DA_42}
+```{r}
 longlonglimittheory <- theory_long %>% pivot_longer(
         cols = LIMIT1:LIMIT3,
         names_to = "NAMES",
@@ -884,7 +870,7 @@ ggplot(longlonglimittheoryGroup,
 
 Let's see how many times which theories are used in papers which have limitations because of sample bias: 
 
-```{r chunk_DA_43}
+```{r}
 
 theory_long %>% pivot_longer(
         cols = LIMIT1:LIMIT3,
@@ -904,7 +890,7 @@ theory_long %>% pivot_longer(
 There are way too many factors for even visualizations to have any meaningful results. 
 So, it's better to look at the factor themes and maybe get more specific only look up really interesting patterns. 
 
-```{r chunk_DA_44}
+```{r}
 longlongfactortheory <- theory_long %>% pivot_longer(
     cols = F1_THEME:F9_THEME,
     names_to = "NAMES",
@@ -921,7 +907,7 @@ longlongGroupfactortheory <- longlongfactortheory %>%
 
 ```
 
-```{r chunk_DA_45}
+```{r}
 ggplot(longlongGroupfactortheory, 
     aes(area = n, fill = as.factor(THINGS),
        label = paste(THEORY, THINGS, sep = "\n"))) +
@@ -944,7 +930,7 @@ ggplot(longlongGroupfactortheory,
   ) 
 ```
 
-```{r chunk_DA_46}
+```{r}
 ggplot(longlongGroupfactortheory, 
     aes(x = as.factor(THEORY), fill = THINGS)) +
     geom_bar(position = "fill") +
@@ -957,7 +943,7 @@ ggplot(longlongGroupfactortheory,
 ```
 
 Let's see for example what type of theories are routinely used with market factors:
-```{r chunk_DA_47}
+```{r}
 longlongfactortheory %>% group_by(THINGS) %>% 
     count(THEORY) %>% arrange(desc(n)) %>%
     filter(THINGS == "MARKET")
@@ -968,7 +954,7 @@ longlongfactortheory %>% group_by(THINGS) %>%
 #### Theory vs Non-Significant Factors  
 
 
-```{r chunk_DA_48}
+```{r}
 longlongfactornstheory <- theory_long %>% pivot_longer(
     cols = FNS1:FNS4,
     names_to = "NAMES",
@@ -985,7 +971,7 @@ longlongGroupfactorNStheory <- longlongfactornstheory %>%
 ```
 
 
-```{r chunk_DA_49}
+```{r}
 ggplot(longlongGroupfactorNStheory, 
     aes(area = n, fill = THEORY, 
         label = paste(THEORY, THINGS, sep = "\n"))) +
@@ -1009,7 +995,7 @@ ggplot(longlongGroupfactorNStheory,
 ```
 
 
-```{r chunk_DA_50}
+```{r}
 longlongfactornstheory %>% group_by(THINGS) %>% 
     count(THEORY) %>% arrange(desc(n)) %>% 
     filter(THINGS == "PERSONAL")

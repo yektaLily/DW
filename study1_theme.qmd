@@ -15,6 +15,8 @@ format:
       error: false
       results: 'asis'
     #css: style.css
+bibliography: references.bib
+csl: apa.csl
 ---
 <!-- CSS CHANGES -->
 <style>
@@ -385,6 +387,7 @@ I also didn't have the time to find a fix for it, but there are a bunch of comme
 
 So, we now have a dictionary with the factors and their theme, and a corpus of text of all papers in the dataset. 
 What I'm going to do here is: 
+
 * Count all the words `total_words` in each paper 
 * Count the instances of each word (factor) in `theme_of_words_cleaned` in each paper 
 * Each word's count adds 1 point to its corresponding theme's "weight score" 
@@ -572,14 +575,23 @@ for paper_id, themes in themes_for_papers.items():
 ```
 
 > Paper ID: p2_01, Themes: psychological
+> 
 > Paper ID: p2_02, Themes: psychological
+> 
 > Paper ID: p2_03, Themes: psychological
+> 
 > Paper ID: p2_04, Themes: psychological
+> 
 > Paper ID: p2_05, Themes: psychological
+> 
 > Paper ID: p2_06, Themes: perceptive
+> 
 > Paper ID: p2_07, Themes: personal
+> 
 > Paper ID: p2_08, Themes: personal
+> 
 > Paper ID: p2_09, Themes: perceptive
+> 
 > Paper ID: p2_10, Themes: psychological
 
 Since Topic Modeling is Multimembership, papers can have more than just 1 theme.
@@ -717,14 +729,23 @@ for paper_id, themes in top_3_themes_for_papers.items():
 ```
 
 > Paper ID: p2_01, Top 3 Themes: psychological, cultural, demographic
+> 
 > Paper ID: p2_02, Top 3 Themes: psychological, market, personal
+> 
 > Paper ID: p2_03, Top 3 Themes: psychological, personal, perceptive
+> 
 > Paper ID: p2_04, Top 3 Themes: psychological, personal, perceptive
+> 
 > Paper ID: p2_05, Top 3 Themes: cultural, personal, psychological
+> 
 > Paper ID: p2_06, Top 3 Themes: perceptive, cultural, psychological
+> 
 > Paper ID: p2_07, Top 3 Themes: personal, psychological, demographic
+> 
 > Paper ID: p2_08, Top 3 Themes: psychological, personal, perceptive
+> 
 > Paper ID: p2_09, Top 3 Themes: perceptive, psychological, personal
+> 
 > Paper ID: p2_10, Top 3 Themes: psychological, cultural, personal
 
 Keep a copy and save this to file: 
