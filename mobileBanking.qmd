@@ -1,0 +1,17 @@
+---
+title: "Mobile Banking"
+about:
+    template: marquee
+    links:
+        - icon: github
+        - text: Github
+        - href: github.com/yektaLily 
+---
+
+Mobile banking (m-banking) is a service that allows users to perform financial transactions and manage their accounts using a mobile device, such as a smartphone.
+This technology has gained significant popularity due to its convenience and the increasing use of smartphones. 
+M-banking revolutionizes traditional banking by enabling users to conduct various banking tasks, including paying bills, viewing account balances, and transferring funds, directly from their mobile devices.
+The accessibility of smartphones, which are daily companions for most people, resolves challenges associated with in-person bank visits, such as queues, commute time and costs, and limited business hours.
+In Canada, mobile banking has become the most popular banking method. 
+By the last quarter of 2023, 60% of Canadians primarily used m-banking, a notable shift from 2019 when only 53% used mobile devices for banking.
+This transition highlights m-banking's growing importance as the primary way Canadians manage their finances.
