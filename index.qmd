@@ -1,9 +1,23 @@
 ---
 title: "Yekta's Dissertation Website"
-
+author: "Yekta Amirkhalili"
+date: "today"
+format:
+  html:
+    toc: true
+    toc-title: "Table of Contents"
+    toc-depth: 2
+    number-sections: true
+    fig-width: 6
+    fig-height: 4
 ---
 
+
 Hi! Welcome to my dissertation website. 
+To navigate to where you want to go, use the left navigation menu to move between pages and the hovering right navigation menu to jump to differnt sections/headings of the same page. 
+Also, the work here is copyrighted by me! As in, this is my PhD dissertation! So please don't steal. 
+
+### About Me
 I started my PhD in Management Science & Engineering at University of Waterloo in August 2021. 
 This website will walk you through my entire project, which took me over 3 years to finish. 
 I'm hoping this project can be used by others as inspiration, and hopefully, as a portfolio project for my own! 

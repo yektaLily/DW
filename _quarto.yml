@@ -15,23 +15,22 @@ website:
     search: true
     tools:
       - icon: "github"
-        href: "github.com/YektaDissertation"
+        href: "https://github.com/yektaLily/"
     background: light
     border: true
     width: 250px
     alignment: left  
     contents:  
       - text: "Home"
-        href: index.qmd 
+        href: "index.qmd" 
       - text: "Introduction"
-        href: introduction.qmd
+        href: "introduction.qmd"
       - section: "Basics"
-        href: basics.qmd
         contents:
           - text: "Technology Adoption"
-            href: techAdopt.qmd
+            href: "techAdopt.qmd"
           - text: "Mobile Banking"
-            href: mobileBanking.qmd
+            href: "mobileBanking.qmd"
       - section: "Projects"
         contents:
         - section: "Project 1. SLR"
@@ -41,14 +40,13 @@ website:
           - href: "study1_theme.qmd"
           - href: "study1_DA.qmd"
         - section: "Project 2. Mental Health"
-          href: study2.qmd
+          href: "study2.qmd"
           contents:
           - href: "study2_DA.qmd"
         - section: "Project 3. Digital Divide"
-          href: study3.qmd
+          href: "study3.qmd"
           contents:
           - href: "study3_DA.qmd"
-
 format:
   html:
     theme:
