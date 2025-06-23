@@ -1,12 +1,27 @@
 ---
 title: "Mobile Banking"
-about:
-    template: marquee
-    links:
-        - icon: github
-        - text: Github
-        - href: github.com/yektaLily 
+author: "Yekta Amirkhalili"
+date: "today"
+format:
+  html:
+    toc: true
+    toc-title: "Table of Contents"
+    toc-depth: 2
+    number-sections: true
+    fig-width: 6
+    fig-height: 4
+    math:
+      engine: mathjax
+bibliography: references.bib
+csl: apa.csl
 ---
+
+<style>
+p {
+  text-align: justify;
+}
+</style>
+
 
 Mobile banking (m-banking) is a service that allows users to perform financial transactions and manage their accounts using a mobile device, such as a smartphone.
 This technology has gained significant popularity due to its convenience and the increasing use of smartphones. 
