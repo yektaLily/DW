@@ -1,0 +1,131 @@
+---
+title: "The Inner Workings of Mobile Banking Adoption: A Systematic Literature Review of Intrinsic Factors" 
+author: "Yekta Amirkhalili"
+date: "today"
+format: 
+  html: 
+    code-fold: false
+    code-tools: true
+    self-contained: false
+    execute:
+      eval: false 
+      echo: true
+      warning: false
+      message: false
+      error: false
+      results: 'asis'
+    #css: style.css
+---
+<!-- CSS CHANGES -->
+<style>
+.quarto-title h1.title {
+  font-size: 1.5rem; 
+}
+
+h2{
+    font-size: 1.2rem;
+    background-color:rgba(128, 170, 156, 0.48);
+}
+
+.future-idea-box {
+  border: 2px solid var(--quarto-hl-header-color, #86bdab); /* Uses Quarto header color variable or fallback */
+  border-radius: 8px;
+  padding: 1em;
+  margin: 1em 0;
+  background: #f9f9fc;
+}
+.future-idea-title {
+  font-weight: bold;
+  color: var(--quarto-hl-header-color,rgb(111, 172, 152));
+  margin-bottom: 0.5em;
+  font-size: 1.1em;
+}
+
+</style>
+<!-- CSS CHANGES -->
+
+
+This study is the second chapter of my Dissertation, "Essays on Mobile Banking Adoption".
+I hope it provides a clear framework for categorizing the various factors that influence mobile banking (m-banking) adoption, which have lacked uniform definitions in previous research.
+Really, what even is *perceived value* of something? 
+If depends on so many things and the context, and from problem to problem and person to person, it could be totally different! 
+Digging deep into the literature, this was one thing that was really challenging and I only found other studies saying the same thing... but no one really addressed it.
+There's also an over-reliance on a limited number of factors and theoretical frameworks in existing m-banking adoption literature.
+Like, we get it, technology acceptance model is very cool and strong! We know it works! Why are people still trying to show that it works? 
+
+Here, in an attempt to offer some relief to researchers from the above issues, I introduce a novel categorization of adoption factors - breaking all of them into two main dimensions: 
+
+1. Intrinsic 
+2. Extrinsic 
+
+Depending on how it relates to the decision maker. 
+That basically means: is the decision you are making (about adoption of m-banking app) being influenced by factors (things) outside of your head that everyone else experiences (almost) the same as you do? 
+Or is it more complicated than that, and it has to do with who you are, what you want, and how you perceive things? 
+Those are external (to the user) and internal (to the user) factors. 
+The focus of this study is on intrinsic factors, which relate to how individuals internally evaluate an m-banking application based on their perceptions (Perceptive Factors), goals and motivations (Personal Factors), social pressures (Social Factors), and emotions/mood (Psychological Factors).
+In contrast, extrinsic factors are measurable features of the app, like performance and functionality, which are generally easier to quantify and study - (almost) everyone experiences these things the same way.
+
+To be even more detailed, I break intrinsic factors into further divisions - four main sub-categories: 
+
+* Perceptive (based on beliefs and perceptions), 
+* Personal (based on individual motivations and traits), 
+* Social (based on the impact of others), 
+* Psychological (based on cognitive, emotional, and mental processes).
+  
+This structured categorization is to clarify the meaning of some factors, and hopefully enable more focused research, as well as highlight overlooked patterns in the literature.
+To introduce these factors, I do a systematic literature review of m-banking adoption with these factors in mind.
+Here's another novelty of this chapter: I used text-mining techniques --- nothing fancy, just Latent Dirichlet Allocation (LDA) for topic modeling and a neat custom algorithm --- to assign themes to collected scientific articles.
+Because of a colleagues comments, I also decided to apply some statistical techniques, to validate the findings empirically.
+I have a large enough dataset, so why not?  
+This should provide a robust foundation for future context-focused research, help identify gaps, and advocate for the exploration of under-studied theories and methods in m-banking adoption.
+
+I'll briefly introduce the three main parts of this research. 
+I didn't have time to write these sections, but verbally explained to ![Gemini](https://gemini.google.com/app) what I wanted and only edited it a little bit after. 
+It sounds too academic, but not that scary: 
+
+### Topic Modeling
+
+Topic modeling is a crucial step in analyzing text data to identify patterns and themes within a collection of articles.
+In this chapter, the process begins with extracting text from PDF files using `PyMuPDF` and then cleaning the text by converting it to lowercase, removing special characters, extra spaces, and stop words using `NLTK`.
+The cleaned text is then broken down into uni-grams (single words) and bi-grams (word pairs) through a process called tokenizing.
+
+To identify the most important tokens, the Term Frequency-Inverse Document Frequency (TF-IDF) method is applied, followed by Latent Dirichlet Allocation (LDA) to discover latent topics within the corpus.
+LDA models documents as mixtures of latent topics, where each topic is represented by a distribution of words.
+The number of topics for the LDA algorithm is determined by evaluating models with a range of topics ($|T|\in[5,15]$) and selecting the number that yields the highest coherence score, which indicates better model performance.
+For this study, eight topics were found to be optimal when using bi-grams.
+
+The LDA-generated topics are then clarified and categorized. Tokens are grouped into categories such as Perceptive (perception-related), Psychological (cognition, emotions, mind), Personal (individual characteristics), Demographic (age, gender, income, education), Cultural (country, region, religion, culture), External (universally experienced, extrinsic factors), Market (technologies, devices), and Generic (unclassified or vague).
+Generic and external tokens are excluded from theme classification to maintain focus on intrinsic factors.
+
+For a walk through of this part, read [Topic Modeling](study1_tm.html).
+
+### Theme Assignment 
+
+Following topic modeling, each paper is assigned themes by the authors, with typically one to three themes per paper.
+To validate these assignments, a rule-based text mining approach using TF-IDF is employed.
+This method verifies theme assignments by counting the occurrences and impact of tokens within each article, allowing for up to three themes to be assigned per paper.
+
+The algorithm works by using a pre-defined Python dictionary where each key represents a theme (e.g., "Perceptive," "Psychological") and its value is a list of factors associated with that theme.
+The algorithm calculates a score for each theme in an article based on the frequency of its associated factors. 
+The themes corresponding to the top three highest scores are then assigned to the paper.
+If there is an overlap between author-assigned themes and algorithm-assigned themes, the matching theme with the highest weight is selected as the main theme.
+In cases where no themes match, the paper is re-reviewed for a decision.
+The analysis showed a high agreement rate of 90.2% between manual and rule-based assignments.
+
+For a walk through of this part, read [Theme Assignment](study1_theme.html).
+
+### Data Analysis
+
+The dataset used for this chapter's analysis comprises 143 articles published between 2018 and 2024, with significant variation in sample sizes across studies.
+Key information, such as factors of influence, research type, sample size, methods, and foundational theories, was manually extracted from each paper and stored in a CSV file.
+
+An exploratory data analysis revealed several insights into the m-banking adoption literature. 
+Most studies are quantitative (80), followed by empirical (27). The Technology Acceptance Model (TAM) and the Unified Theory of Acceptance and Use of Technology (UTAUT) are the most dominant theoretical frameworks, accounting for 70% of the literature, suggesting a potential over-reliance on these models.
+Structural Equation Modeling (SEM) and Partial Least Squares SEM (PLS-SEM) are the most common methodologies used.
+
+The most frequently cited limitations in the studies include limited generalizability due to a focus on specific countries, sample-related issues (such as unrepresentative samples), and the lack of longitudinal studies.
+Perceived Usefulness, Perceived Ease of Use, and Trust are among the most frequently identified significant factors.
+The analysis also investigates non-significant factors and explores patterns in how these factors are reported across different study characteristics.
+Statistical analyses, such as chi-squared tests, are used to examine relationships between themes, technologies, research types, and other variables. 
+
+For a walk through of this part, read [Data Analysis](study1_DA.html).
