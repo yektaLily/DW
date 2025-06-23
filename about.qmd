@@ -5,7 +5,7 @@ about:
     links:
         - icon: github
         - text: Github
-        - href: github.com/yektaLily 
+        - href: [github.com/yektaLily](https://github.com/yektaLily)
 ---
 
 
