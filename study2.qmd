@@ -46,7 +46,7 @@ h2{
 
 ## What’s the Connection?
 In this chapter, I look into how mental health might affect whether people choose to adopt mobile banking or not. 
-While doing my review of past studies (refer to study 1 ![here](study1.qmd)), I noticed that a lot of research talks about how things like trust, risk, and perceived ease of use affect adoption.
+While doing my review of past studies (refer to study 1 [here](study1_DA.html)), I noticed that a lot of research talks about how things like trust, risk, and perceived ease of use affect adoption.
 But very few studies look at how a person’s mental and emotional state influences their behavior.
 Especially because some studies actively showed how not accounting for people's emotions were sometiems giving them strange results. 
 
@@ -82,4 +82,4 @@ This chapter is where I introduce mental health as a new factor in mobile bankin
 I show how mental and emotional states might be just as important as the usual stuff like trust or app features. 
 The results surprised me, and hopefully, they'll give banks and researchers something new to think about too.
 
-By the way, this chapter was already published in ![Electronic Commerce Research](https://link.springer.com/article/10.1007/s10660-024-09905-7). 
+By the way, this chapter was already published in [Electronic Commerce Research](https://link.springer.com/article/10.1007/s10660-024-09905-7). 
