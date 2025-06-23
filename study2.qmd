@@ -1,0 +1,85 @@
+---
+title: "Mental Health and Mobile Banking" 
+author: "Yekta Amirkhalili"
+date: "today"
+format: 
+  html: 
+    code-fold: false
+    code-tools: true
+    self-contained: false
+    execute:
+      eval: true 
+      echo: true
+      warning: false
+      message: false
+      error: false
+      results: 'asis'
+    #css: style.css
+---
+<!-- CSS CHANGES -->
+<style>
+.quarto-title h1.title {
+  font-size: 1.5rem; 
+}
+
+h2{
+    font-size: 1.2rem;
+    background-color:rgba(128, 170, 156, 0.48);
+}
+
+.future-idea-box {
+  border: 2px solid var(--quarto-hl-header-color, #86bdab); /* Uses Quarto header color variable or fallback */
+  border-radius: 8px;
+  padding: 1em;
+  margin: 1em 0;
+  background: #f9f9fc;
+}
+.future-idea-title {
+  font-weight: bold;
+  color: var(--quarto-hl-header-color,rgb(111, 172, 152));
+  margin-bottom: 0.5em;
+  font-size: 1.1em;
+}
+
+</style>
+<!-- CSS CHANGES -->
+
+## What’s the Connection?
+In this chapter, I look into how mental health might affect whether people choose to adopt mobile banking or not. 
+While doing my review of past studies (refer to study 1 ![here](study1.qmd)), I noticed that a lot of research talks about how things like trust, risk, and perceived ease of use affect adoption.
+But very few studies look at how a person’s mental and emotional state influences their behavior.
+Especially because some studies actively showed how not accounting for people's emotions were sometiems giving them strange results. 
+
+I also found that even if the literature did talk about emotions, it was mostly about emotions as a result of the adoption/use of a technology. 
+Not about how your general mood or feelings or struggles impact how you behave and interact with technology. 
+Like I know when I'm stressed out or dreading something, the doom scrolling gets worse! 
+But social media apps are built to be addictive and drag you in and make you want it more. 
+Until you actually stop enjoying it and being online is no longer fun. 
+In fact, I read just recently how engagement and use of social media apps has dropped in recent years! 
+I'll find the citation for it later! 
+Anyway, I digress... Point is, I think your mood definitely affects how you interact with the world and technology is part of that world. 
+So, what about people who have special moods? 
+That is, certain behavioral or mental challenges? 
+Not exactly disabilities, but hidden challenges often ignored! 
+
+I wanted to explore whether people who are feeling mentally well are more or less likely to use mobile banking. 
+My guess going in was that people with better mental health might feel more confident and more open to using this tech. 
+But I found out it was actually the opposite! 
+Then I got to thinking... why is that? Well, Here's my guess:
+
+* Maybe people with poorer mental health actually rely on mobile banking to avoid going out and talking to people, or dealing with stress in traditional banking.
+* Maybe people who are happy don't bank and don't stress about money! 
+* It's not a causation, and I don't know which comes first - are people who bank less happier or is it that happy people don't bank as often? This is not the study to answer that. But that would be a cool study! 
+
+I used Canadian survey data and looked at three things related to mental health:
+
+* How satisfied are you in your relationships (RS)
+* How dependent are you on your smartphones (SD)
+* Whether or not you use social media (SNS)
+
+I also tested whether these three things change (or "moderate") how mental health affects mobile banking adoption.
+This chapter is where I introduce mental health as a new factor in mobile banking adoption models.
+I show how mental and emotional states might be just as important as the usual stuff like trust or app features. 
+The results surprised me, and hopefully, they'll give banks and researchers something new to think about too.
+
+By the way, this chapter was already published in ![Electronic Commerce Research](https://link.springer.com/article/10.1007/s10660-024-09905-7). 

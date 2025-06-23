@@ -1,0 +1,168 @@
+---
+title: "Introduction"
+author: "Yekta Amirkhalili"
+date: "today"
+format:
+  html:
+    toc: true
+    toc-title: "Table of Contents"
+    toc-depth: 2
+    number-sections: true
+    fig-width: 6
+    fig-height: 4
+    math:
+      engine: mathjax
+bibliography: references.bib
+csl: apa.csl
+---
+
+<style>
+p {
+  text-align: justify;
+}
+</style>
+
+The proliferation of Mobile banking, referred to in this project as m-banking, has transformed financial services, enabling consumers to conduct transactions conveniently through mobile devices.
+Despite the advantages, m-banking adoption rates vary significantly.
+Adoption is the early stage usage or uptake of a technology.
+My dissertation aims to bridge critical gaps in understanding how different factors (according to literature trends and through novel contributions) and device-specific attributes shape m-banking adoption.
+The central research question addressed in this dissertation is: 
+"What are the factors that influence mobile banking adoption across different user segments?"
+
+The current chapter is a holistic introduction to the dissertation.
+To answer the main research question, I conducted three distinct yet interconnected studies.
+These studies, presented in chronological order in the following chapters, are:
+
+1. The Inner Workings of Mobile Banking Adoption: A Systematic Literature Review of Intrinsic Factors --- An SLR study of a specific group of adoption factors defined for the first time in this study as "intrinsic factors".
+2. The Relationship Between Mental Health and Mobile Banking Adoption: Evidence from Canada --- An analysis of the impact of mental health and related psychological factors on m-banking adoption.
+3. The Device Divide: Unpacking Mobile Banking Adoption Differences for Smartphones and Smart Wearable Devices --- An investigation into the role of device type (smartphone vs. smart wearable) in shaping adoption behaviors.
+
+**Theoretical Contributions**
+
+This dissertation makes several contributions to the field of technology adoption and financial services research.
+
+1. My research extends the understanding of factors in m-banking adoption by providing a useful categorization in two levels.
+2. My research is the first to look at mental health and its related concepts in m-banking adoption, integrating mental health considerations into behavioral technology models.
+3. My research is the first to consider device differences in a comparative setting in m-banking, specifically looking at smartphone and smart wearable devices. The results show that device impacts Trust, Perceived Security, and Perceived Value of m-banking. Therefore, even established theoretical frameworks such as the utaut @venkatesh2000theoretical and tam @davisUserAcceptanceComputer1989a could be improved by integrating device specific measures.
+
+**Practical Contributions**
+
+1. I use text-mining techniques to extract topics and classify articles in a systematic literature review study, providing a structured approach for future research.
+2. I conduct a comparative study, the first of its kind, between different devices and their impact on m-banking adoption factors. For Practical Contributions, the insights from this dissertation help financial institutions as well as researchers on many frontiers.
+3. The results of [the first study](study1.html) could be used as a reference for future scholars to conduct more directed research by finding context-specific theories, factors and methodologies. 
+4. I highlight various gaps in the literature and offer suggestions for future researchers.
+5. My categorization of adoption factors helps clarify these latent ideas, improving understanding for both practitioners and researchers.
+6. The results from Chapter [the second study](study2.html) show that Social Media is one of the best platforms for marketing for banks.
+7. From the same study, I highlight the various ways banks could promote and engage consumers with various mental health concerns.
+8. From the results of Chapter [the third study](study3.html), I offer actionable strategies for financial institutions to tailor their digital banking services based on device-specific adoption behaviors.
+
+
+### The Inner Workings of Mobile Banking Adoption: A Systematic Literature Review of Intrinsic Factors 
+
+Despite extensive research on m-banking adoption, a clear framework categorizing user-specific influences is still missing.  
+After investigating the m-banking adoption literature, I found that uniform definitions for factors [^1] influencing m-banking adoption was lacking. 
+Furthermore, there was an over-reliance on only a few factors and theoretical frameworks. 
+This prompted the undertaking of the SLR study in [study 1](study1.html). 
+To address the problem of lack of uniform definitions, I categorized adoption factors based on context and impact.
+This way, using group/category membership help identify similarities between factors.
+Thus making definitions more cohesive.
+
+Several studies support the idea that categorization helps in defining and understanding concepts more easily.
+Research suggests that categorization plays a crucial role in defining concepts, moving from a classical view (fixed definitions) to a probabilistic view where categorization helps in making sense of concepts based on shared characteristics @medinConceptsConceptualStructure1989.
+Categorization enables more effective organization and processing of information which are essential for learning new concepts @zentallCATEGORIZATIONCONCEPTLEARNING2002.
+
+Technology adoption factors are complex and often belong to multiple categories.
+Because of this, studies have never explicitly categorized factors across the board.
+I adopt a broad approach to classifying factors, focusing on two key dimensions of decision-making based on how they relate to the user: Intrinsic and Extrinsic.
+In the context of m-banking adoption, intrinsic factors discuss how individuals evaluate an m-banking application (Often shortened to "app") internally --- based on perceptions, goals, pressure felt from other people's judgment, and emotions.
+Extrinsic factors, on the other hand, refer to the apps' measurable features, such as performance and functionality.
+Since extrinsic factors are easy to quantify and experienced similarly across the board, they are also straightforward to study.
+Thus, I focused on intrinsic factors.
+Because intrinsic factors relate to so many different inner processes (mentioned above), I further categorized them into four main groups: 
+
+1. **Perceptive**, which are based on beliefs and perceptions.
+2. **Personal**, which are based on individual motivations and traits. 
+3. **Social**, which are based on the impact of others on the decision-maker.
+4. **Psychological**, which are based on based on cognitive, emotional and mental processes.
+
+This categorization provides a useful context-specific grouping.
+Following this, a systematic search of the m-banking literature for intrinsic factors was carried out.
+Scientific articles gathered were given themes using text-mining techniques -- specifically, lda for Topic Modeling.
+Some of these themes matched my categorization, as well. 
+I also extended prior SLR studies by using statistical techniques -- specifically, anova -- to mathematically validate my findings.
+My results provide a strong empirical foundation for future researchers to do context-focused investigation. 
+
+The Outcome of this study is to help enhance the understanding of intrinsic factors, highlight underutilized methodologies, and identify research gaps.
+Additionally, I highlight the dominance of certain theoretical models while advocating for greater exploration of under-studied theories and methods.
+My findings show notable geographical and study-design biases, particularly longitudinal research in developed nations.
+My categorized framework helps scholars identify intrinsic factors, relevant theories, and research gaps, which promotes targeted future research.  
+For practitioners and policymakers, I recommend designing emotionally engaging apps, ensuring transparent risk communication, and educating users on safe practices.
+These steps enhance m-banking adoption and effectiveness.
+
+[^1]: The words factor and construct are used interchangeably throughout most of m-banking adoption literature with no significant distinction between them @oyetadeReviewDeterminantFactors2020.
+
+### The Relationship Between Mental Health and Mobile Banking Adoption: Evidence from Canada 
+
+Following the work of the previous study, I focused on intrinsic factors. 
+One of the factors I found to be under-explored in the literature was mental health.  
+Psychological factors are comparatively less-studied across the m-banking literature @venkateshConsumerAcceptanceUse2012, @zouInvestigatingNonlinearConditional2023, @tiwariExaminingImpactCustomers2021f.
+I verified this further doing a quick preliminary search on Web-of-Science. 
+Using the following search query returned $1,067$ studies with no filters set on the results:
+
+>>> ("mobile banking" OR "mbanking" OR "m-banking") AND ("adoption")
+
+
+When changing the search query to find studies specifically on psychological factors, the total number of studies returned were $157$, which is about $14%$ of the total. 
+The new search query was:
+
+>>>    ("mobile banking" OR "mbanking" OR "m-banking") AND ("adoption") AND ("affective" OR "psychological" OR "affect based" OR "affect-based" OR   "emotional" OR "cognitive" OR "mental" OR "personal")
+
+
+Using the same search queries in Scopus, $753$ results were returned for the first, and $101$ in the second search ($13.4%$).
+It is clear that only a small portion of the literature in m-banking adoption is focused on psychological factors.
+In this study, I investigated the direct and moderated effect of mental health on m-banking adoption.
+Moderators were extracted from theories in technology adoption or from literature related to mental health: RS, SD, and SNS.
+I used a fixed effect logistic regression model grouped based on Canadian provinces following the cluster sampling design of my dataset.
+The results showed that mental health significantly and negatively affects m-banking adoption: better mental health outcomes were associated with lower likelihood of m-banking adoption.
+I did not find sufficient evidence for the moderating effects.
+
+
+### The Device Divide: Unpacking Mobile Banking Adoption Differences for Smartphones and Smart Wearable Devices "labelintro-section-p3
+
+Moving on from focusing only on smartphones, I decided to do a comparative study considering newer devices used in m-banking.
+One of the findings of my SLR study from Section "refintro-section-p2 was that few comparative studies exist in general, and studies that focus on various tools used for m-banking are increasingly important. 
+In this chapter, I examined the nuances of m-banking adoption across two mobile devices: smartphones and smart wearable devices.
+I investigated the impact of the following factors: trust, perceived security, perceived value (time savings), and demographic variables.
+Demographic factors are important as numerous studies identify these (e.g., age, gender, income, and education) as key factors influencing m-banking adoption @chawlaModeratingEffectDemographic2018e, @lyInternetBankingAdoption2022e. 
+
+The results from this chapter are device-specific insights.
+This study also refines existing technology adoption models.
+Additionally, to the best of my knowledge, this is the first study to compare behavioral differences between smartphone and smart wearable users in the context of m-banking. 
+I found that trust impacts smartphone users more strongly, while wearable users prioritize time efficiency.
+Users perceived smartphones as more secure.
+Demographic factors such as age, education, and gender exhibited varying influences based on device type as well.
+
+
+### Some Questions and Answers 
+- Why not talk about "use" but "adopt"? 
+
+Adoption is a more comprehensive term that encompasses the entire process of integrating a new technology into daily life, while use may imply a more superficial interaction.
+
+- What's been done before in the litearture? 
+
+
+- What did I do that was novel?
+
+- What insights I gained from this dissertation that were new?
+
+- How did I fill the literature gaps?
+
+- Why is it that categorization of the factors helps in understanding the factors better? 
+
+- How exactly did I categorize the factors?
+
+- Who does this categorization help?
+
+
+
+### References 

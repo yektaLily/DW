@@ -1,0 +1,63 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Yekta's Dissertation"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+  sidebar:
+    title: "Contents"
+    style: "docked"
+    search: true
+    tools:
+      - icon: "github"
+        href: "github.com/YektaDissertation"
+    background: light
+    border: true
+    width: 250px
+    alignment: left  
+    contents:  
+      - text: "Home"
+        href: index.qmd 
+      - text: "Introduction"
+        href: introduction.qmd
+      - section: "Basics"
+        href: basics.qmd
+        contents:
+          - text: "Technology Adoption"
+            href: techAdopt.qmd
+          - text: "Mobile Banking"
+            href: mobileBanking.qmd
+      - section: "Projects"
+        contents:
+        - section: "Project 1. SLR"
+          href: "study1.qmd"
+          contents: 
+          - href: "study1_tm.qmd"
+          - href: "study1_theme.qmd"
+          - href: "study1_DA.qmd"
+        - section: "Project 2. Mental Health"
+          href: study2.qmd
+          contents:
+          - href: "study2_DA.qmd"
+        - section: "Project 3. Digital Divide"
+          href: study3.qmd
+          contents:
+          - href: "study3_DA.qmd"
+
+format:
+  html:
+    theme:
+      light: minty
+      dark: darkly
+    css: styles.css
+    toc: true
+    html-math-method: katex
+
+margin-header: |
+  ![](/images/uw-logo.png) 
+

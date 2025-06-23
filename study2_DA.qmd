@@ -1,0 +1,1437 @@
+---
+title: "Effect Of Mental Health on Mobile Banking" 
+author: "Yekta Amirkhalili"
+date: "today"
+format: 
+  html: 
+    code-fold: false
+    code-tools: true
+    self-contained: false
+    execute:
+      eval: true 
+      echo: true
+      warning: false
+      message: false
+      error: false
+      results: 'asis'
+    #css: style.css
+---
+<!-- CSS CHANGES -->
+<style>
+.quarto-title h1.title {
+  font-size: 1.5rem; 
+}
+
+h2{
+    font-size: 1.2rem;
+    background-color:rgba(128, 170, 156, 0.48);
+}
+
+.future-idea-box {
+  border: 2px solid var(--quarto-hl-header-color, #86bdab); /* Uses Quarto header color variable or fallback */
+  border-radius: 8px;
+  padding: 1em;
+  margin: 1em 0;
+  background: #f9f9fc;
+}
+.future-idea-title {
+  font-weight: bold;
+  color: var(--quarto-hl-header-color,rgb(111, 172, 152));
+  margin-bottom: 0.5em;
+  font-size: 1.1em;
+}
+
+.variable-card {
+  border: 2px solid #447099;           /* Choose your border color */
+  background: #f5f8fa;                 /* Light background */
+  border-radius: 8px;
+  padding: 1.2em 1.5em;
+  margin: 1em 0;
+  box-shadow: 0 2px 8px rgba(68,112,153,0.05);
+  max-width: 500px;
+}
+
+</style>
+<!-- CSS CHANGES -->
+
+## Data Analysis 
+In this project, I focused on analyzing how mental health relates to mobile banking adoption.
+I used data from the Canadian Internet Use Survey, which includes questions about digital habits, mental health, and demographics.
+You can find the dataset [here](https://abacus.library.ubc.ca/dataset.xhtml;jsessionid=334500b45ffff5190ff22e232434?persistentId=hdl%3A11272.1%2FAB2%2FNUVBX2&version=&q=&fileTypeGroupFacet=&fileAccess=Public&fileSortField=name&fileSortOrder=desc). 
+I built a fixed-effects logistic regression model, grouped by `province`, to control for regional differences as this was the sampling cluster.
+My main variable was self-reported mental health scores.
+I included factors like relationship satisfaction, smartphone dependency, and social media use. 
+I also tested interaction effects to see if these variables change the way mental health influences mobile banking use.
+The following is a step-by-step on the coding and analysis of the project. 
+
+### Importing Libraries 
+Note that not all libraries may be utilized. 
+The most important ones are `dplyr`, `lme4`, `tidyr`, `ggplot2`, `psych`, `corrr`, `haven`, `marginaleffects` and `margins` and any related libraries to these. 
+```{r chunk_2DA_1}
+#| echo: false 
+
+library(corrr)
+library(psych)
+library(lavaan)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(haven)
+library(rempsyc)
+library(broom)
+library(report)
+library(effectsize)
+library(aod)
+library(readr)
+library(forcats)
+library(ggcorrplot)
+library(caret)
+library(knitr)
+library(ROCR)
+library(jtools)
+library(xtable)
+library(glmnet)
+library(ggpubr)
+library(lme4)
+library(nlme)
+library(weights)
+library(miscTools)
+library(systemfit)
+library(multcomp)
+require(ggplot2)
+require(GGally)
+require(reshape2)
+require(lattice)
+library(HLMdiag)
+library(margins)
+library(performance)
+library(ggnewscale)
+library(ggeffects)
+library(ggeffects)
+library(marginaleffects)
+library(effects)
+library(margins)
+library(modelr)
+library(plm)
+library(effectsize)
+library(aod)
+library(readr)
+library(tidymodels)
+library(ggcorrplot)
+library(glmnet)
+library(ggpubr)
+library(foreign)
+library(AER)
+library(lme4)
+library(formatR)
+library(pglm)
+library(acqr)
+```
+
+### Introducing the CIUS 2020
+
+I first started by reading the entire PUMF file available.  
+This gives you information on how the survey was set up, why, and how things were measured. 
+Then, I looked at the individual survey questions to see the available data, and how they were measured. 
+In general, questions are measured numerically were answeres follow as such:
+> Yes : 1, No : 2, Valid Skip: 6, Don't Know: 7, Refusal: 8, Not Stated: 9 
+Of course this differs question-by-question as some questions have other answer categories and some questions (which were note used in my study) asked for numerical input from the participants (like how much did you spend online last year).
+To help readers understand the data, I will include the question exactly as it appears in the CIUS 2020 PUMF Data Dictionary with corresponding answer choices and codes. 
+These will be in a blue-bordered box, and will include the Variable name (on the PUMF file), Concept, Question Body and Answers. 
+Then I will show you in R code how I've re-coded and used the question as a model variable. 
+The Variables I need are as follows: 
+
+* Mobile banking adoption (`mBanking`)
+* Age Group (`AGE`)
+* Smartphone Dependent (`SD`)
+* Income Quintile (`INC`) 
+* Friendship Satisfaction (`FRISAT`)
+* Mental Health (MH) 
+* Family Relation Satisfaction (`FAMSAT`)
+* Education Level (`EDU`) 
+* Immigration Status (`IMM`)
+* Employment Status (`EMP`)
+* Family Type (`FAM`)
+* Gender (`SEX`)
+* Social Media Use (`SNS`)
+* Province (`province`)
+
+The data is available in various formats. 
+To avoid data loss, I decided to use the `.dta` format (SAS file).
+You need the `haven` package to read SAS files. 
+However, this file is 150MB in size and since I am uploading the code in my GitHub repository, I am not able to use the SAS file. 
+So I've saved the data in a `.csv` file with only the columns I will need. 
+This is how you'd read a SAS file: 
+```{r chunk_2DA_2}
+#| eval: false 
+ds20 <- read_dta("data/cius2020_2022nov18_en.dta")
+ds <- ds20
+
+```
+
+Instead, I run this: 
+```{r chunk_2DA_3}
+ds10 <- read.csv("ds.csv")
+ds <- ds10 
+```
+
+
+**Step 1. Smartphone Users** Select only those who use smartphones because the question is about "online banking" and not "mobile banking". 
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** DV_010A  
+:::
+::: {.column width="50%"}
+**Concept:** Devices used  
+:::
+:::
+
+**Question Text:**  
+During the past three months, what devices did you use to access the Internet?  
+Did you use:  
+*A smartphone*
+
+|**Answer Categories**|**Code**|
+|---------------------|--------|
+|Yes| 1 |
+|No | 2 |
+|Valid Skip | 6 | 
+|Don't Know | 7 | 
+|Refusal | 8 | 
+|Not Stated | 9 | 
+
+:::::
+
+
+```{r chunk_2DA_4}
+ds <- ds %>% 
+    mutate(
+        devSM = case_when(
+            dv_010a == 1 ~ 1, #yes
+            dv_010a == 2 ~ 0, #no
+        .default = -1, #any valid skip and not stated 
+        )
+    )
+
+ds <- ds %>% 
+   filter(devSM == 1)
+```
+
+**Step 2. Mobile Banking Question** Select the outcome variable, mobile banking: 
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** UI_050D  
+:::
+::: {.column width="50%"}
+**Concept:** Activities related to other online activities
+:::
+:::
+
+**Question Text:**  
+During the past three months, which of the following other online activities, have you done over the Internet?
+Have you:
+*Conducted online banking*
+
+|**Answer Categories**|**Code**|
+|---------------------|--------|
+|Yes| 1 |
+|No | 2 |
+|Valid Skip | 6 | 
+|Don't Know | 7 | 
+|Refusal | 8 | 
+|Not Stated | 9 | 
+
+:::::
+
+**Step 3. Select Other Model Variables** Now I will move on to selecting the predictors. 
+For Smartphone Dependency:
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** SM_030A  
+:::
+::: {.column width="50%"}
+**Concept:** Frequency of use of smartphone
+:::
+:::
+
+**Question Text:**  
+In a typical day, how often do you check your smartphone?
+
+|**Answer Categories**|**Code**|
+|---------------------|--------|
+| At least every 5 minutes | 01 | 
+| At least every 15 minutes | 02 | 
+| At least every 30 minutes | 03 | 
+| One time per hour | 04 | 
+| Once a day or a few times per day | 05 | 
+| Less than one time per day | 06 | 
+| Valid skip | 96 | 
+| Don't know | 97 |
+| Refusal | 98 | 
+| Not stated | 99 |
+:::::
+
+As you can see, this one is no longer just a yes/no question, but has a few categories for answers. 
+Since I'm thinking of tracking "dependence", it makes sense that the more frequent checking gets a higher value. 
+So, this is how I code this variable: 
+
+```{r chunk_2DA_5}
+ds <- ds %>%
+    mutate(
+        #timeline : past 3 months 
+        mBanking = case_when(
+            ui_050d == 1 ~ 1, # Yes 
+            ui_050d == 2 ~ 0, # No 
+            .default = -1 # valid skip, don't know, refused, not stated 
+        ),
+        
+        SD = case_when(
+            sm_030a == 1 ~ 6, # At least every 5 minutes 
+            sm_030a == 2 ~ 5, # At least every 15 minutes 
+            sm_030a == 3 ~ 4, # At least every 30 minutes  
+            sm_030a == 4 ~ 3, # One time per hour  
+            sm_030a == 5 ~ 2, # Once a day or a few times per day  
+            sm_030a == 6 ~ 1, # Less than one time per day
+            .default = 96 # Valid skip 96 , Don’t know 97 , Refusal  98, Not stated  99
+        )
+    )
+
+ds <- ds %>% filter(SD < 10)
+ds <- ds %>% filter(mBanking != -1) 
+```
+
+The filters are just making sure that the skip's, don't know's, refusal's and not stated answers are dropped. 
+This is not too big of a loss. 
+There are $17,409$ rows of data. 
+
+Friendship Satisfaction: 
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** TS_010A
+:::
+::: {.column width="50%"}
+**Concept:**  Satisfaction with relationships
+:::
+:::
+
+**Question Text:**  
+In general, on a scale from 1 to 5 where 1 means «completely dissatisfied» and 5 means «completely satisfied», how satisfied are you with the relationships you have with the following people?
+*Friends*
+
+|**Answer Categories**|**Code**|
+|---------------------|--------|
+| 1-Completely dissatisfied | 1 |
+| 2 | 2 |
+| 3 | 3 | 
+| 4 | 4 | 
+| 5- Completely satisfied | 5 | 
+| Valid skip | 6 | 
+| Don't know | 7 |
+| Refusal | 8 | 
+| Not stated | 9 |
+
+:::::
+
+Family Satisfaction: 
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** TS_010B
+:::
+::: {.column width="50%"}
+**Concept:**  Satisfaction with relationships
+:::
+:::
+
+**Question Text:**  
+In general, on a scale from 1 to 5 where 1 means «completely dissatisfied» and 5 means «completely satisfied», how satisfied are you with the relationships you have with the following people?
+*Relatives or family members, excluding those you live with*
+
+|**Answer Categories**|**Code**|
+|---------------------|--------|
+| 1-Completely dissatisfied | 1 |
+| 2 | 2 |
+| 3 | 3 | 
+| 4 | 4 | 
+| 5- Completely satisfied | 5 | 
+| Valid skip | 6 | 
+| Don't know | 7 |
+| Refusal | 8 | 
+| Not stated | 9 |
+:::::
+
+Mental Health:
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** FD_030A 
+:::
+::: {.column width="50%"}
+**Concept:**  Perceived mental health
+:::
+:::
+
+**Question Text:**  
+In general, how is your mental health?
+Would you say:
+
+|**Answer Categories**|**Code**|
+|---------------------|--------|
+| Excellent | 1 |
+| Very good | 2 |
+| Good | 3 | 
+| Fair | 4 | 
+| Poor | 5 | 
+| Valid skip | 6 | 
+| Don't know | 7 |
+| Refusal | 8 | 
+| Not stated | 9 |
+
+:::::
+
+Again, since I want to measure mental health in terms of how good or bad a person is, it makes sense that better moods are associated with elevated numbers (so instead of it being coded as 1, Excellent should be coded as 5). 
+
+
+```{r chunk_2DA_6}
+ds <- ds %>% mutate(
+    FRISAT = case_when(
+        ts_010a == 1 ~ 1, #completely dissatisfied 
+        ts_010a == 2 ~ 2, 
+        ts_010a == 3 ~ 3,
+        ts_010a == 4 ~ 4,
+        ts_010a == 5 ~ 5, #completely satisfied 
+        .default = 6
+    ),
+    
+    FAMSAT = case_when(
+        ts_010b == 1 ~ 1, #completely dissatisfied 
+        ts_010b == 2 ~ 2, 
+        ts_010b == 3 ~ 3,
+        ts_010b == 4 ~ 4,
+        ts_010b == 5 ~ 5, #completely satisfied 
+        .default = 6
+    ),
+    
+    MH = case_when(
+        fd_030a == 1 ~ 5, #excellent 
+        fd_030a == 2 ~ 4, #very good 
+        fd_030a == 3 ~ 3, #good 
+        fd_030a == 4 ~ 2, #fair
+        fd_030a == 5 ~ 1, #poor
+        .default = 6
+    )
+)
+
+ds <- ds %>% filter(
+    FRISAT < 6,
+    FAMSAT < 6,
+    MH < 6
+)
+
+```
+
+
+Social Media use: 
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** UI_010C
+:::
+::: {.column width="50%"}
+**Concept:**  Activities related to communication
+:::
+:::
+
+**Question Text:**  
+During the past three months, which of the following activities, related to communication, have you done over the Internet?
+Have you:
+*Used social networking websites or apps*
+
+|**Answer Categories**|**Code**|
+|---------------------|--------|
+| Yes | 1 |
+| No | 2 |
+| Valid skip | 6 | 
+| Don't know | 7 |
+| Refusal | 8 | 
+| Not stated | 9 |
+:::::
+
+```{r chunk_2DA_7}
+ds <- ds %>% mutate(
+    SNS = case_when(
+        ui_010c == 1 ~ 1, # yes 
+        ui_010c == 2 ~ 0, # no 
+        .default = 3
+    )
+)
+
+ds <- ds %>% filter(
+    SNS < 3
+)
+```
+
+**Step 4. Gather Demographic and Other Information** Here, I will select some demographic information. 
+Since these are not direct questions but information retrieved from other sources (such as postal codes for province), some of them do not have Skips/Don't Know/Refusal/Not Stated answers. 
+If they have, I have added those to the cards. 
+I have also added a frequency column for these variables only to show you the demographic distribution of the sample (not weighted).
+
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** PROVINCE 
+:::
+::: {.column width="50%"}
+**Concept:**  PROVINCE
+:::
+:::
+
+**Note:**  
+Information derived using postal codes.
+
+|**Answer Categories**|**Code**|**Frequency**|
+|---------------------|--------|-------------|
+| Newfoundland and Labrador | 10 | 950 |
+| Prince Edward Island | 11 | 1,154 |
+| Nova Scotia | 12 | 1,181 | 
+| New Brunswick | 13 | 1,223 |
+| Quebec | 24 | 3,911 |
+| Ontario | 35 | 3,719 | 
+| Manitoba | 46 | 973 | 
+| Saskatchewan | 47 | 979 | 
+| Alberta | 48 | 1,365 | 
+| British Columbia | 59 | 1,954 | 
+:::::
+
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** AGE_GRP
+:::
+::: {.column width="50%"}
+**Concept:**  Age Groups – Derived variable
+:::
+:::
+
+**Note:**  
+Derived from age of persons in the household
+
+|**Answer Categories**|**Code**|**Frequency**|
+|---------------------|--------|-------------|
+|15 to 24 years | 01 | 828 |
+|25 to 34 years | 02 | 1,805 |
+|35 to 44 years | 03 | 2,520 |
+|45 to 54 years | 04 | 2,469 |
+|55 to 64 years | 05 | 3,889 |
+|65 years and over | 06 | 5,898 |
+:::::
+
+
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** GENDER
+:::
+::: {.column width="50%"}
+**Concept:**  Gender - Derived variable
+:::
+:::
+
+**Note:**  
+Refers to current gender which may be different from sex assigned at birth and may be different from what is indicated on legal documents. For data quality and confidentiality reasons, and because of the small population being measured, the dissemination of data according to ’Non binary’ Gender is not possible for this statistical program. So, this release uses a gender variable with only two categories. This variable is derived by looking at a large number of demographic characteristics from the respondent, it allows us to disseminate data on Gender that is reliable and unbiased.
+
+|**Answer Categories**|**Code**|**Frequency**|
+|---------------------|--------|-------------|
+| Male | 1 | 8,126 |
+| Female | 2 | 9,283 |
+:::::
+
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** EMP
+:::
+::: {.column width="50%"}
+**Concept:**  Employment status - Derived variable
+:::
+:::
+
+**Note:**  
+
+|**Answer Categories**|**Code**|**Frequency**|
+|---------------------|--------|-------------|
+| Employed | 1 | 8,451 |
+| Not Employed | 2 | 8,177 |
+| Valid Skip | 6 | 0 |
+| Don't Know | 7 | 0 |
+| Refusal | 8 | 0 |
+| Not Stated | 9 | 781 |
+:::::
+
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** G_EDU
+:::
+::: {.column width="50%"}
+**Concept:**  Highest certificate - Derived variable
+:::
+:::
+
+**Note:**  
+
+|**Answer Categories**|**Code**|**Frequency**|
+|---------------------|--------|-------------|
+| High school or less | 1 | 5,746 |
+| Some post-secondary (incl. univ certificate) | 2 | 5,866 |
+| University degree | 3 | 4,889 | 
+| Valid skip | 6 | 0 |
+| Don't know | 7 | 0 |
+| Refusal | 8 | 0 | 
+| Not stated | 9 | 908 |
+:::::
+
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** G_HCOMP
+:::
+::: {.column width="50%"}
+**Concept:**  Type of household - Derived variable
+:::
+:::
+
+**Note:**  
+This derived variable indicates the household composition. It was derived using RRS_Q12 (number of persons in the household), RR_020CA (age of persons in the household) and RR_040AA (relationship of the respondent with the other members of the household).
+
+|**Answer Categories**|**Code**|**Frequency**|
+|---------------------|--------|-------------|
+| Family household with children under 18 | 1 | 3,700 | 
+| Family household without children under 18 | 2 | 8,299 |
+| Single person household | 3 | 4,837 |
+| Other household type | 4 | 414 | 
+| Valid skip | 6 | 0 |
+| Don't know | 7 | 0 |
+| Refusal | 8 | 0 | 
+| Not stated | 9 | 159 |
+
+:::::
+
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** HINCQUIN
+:::
+::: {.column width="50%"}
+**Concept:**  Census family income quintile - Derived variable
+:::
+:::
+
+**Note:**  
+Information derived using HINC. In order to obtain equal weighted counts in each category, cases with incomes equal to the category cutoffs were randomly assigned to one of the two categories on either side of the cutoff.
+
+**Source:** Annual Income Estimates for Census Families and Individuals (T1 Family File)
+
+|**Answer Categories**|**Code**|**Frequency**|
+|---------------------|--------|-------------|
+| Quintile 1 - $\leq$ $44,119 | 1 | 4,200 | 
+| Quintile 2 - $44,120 - $75,321 | 2 | 3,911 |
+| Quintile 3 - $75,322 - $109,431 | 3 | 3,394 |
+| Quintile 4 - $109,432 - $162,799 | 4 | 3,185 |
+| Quintile 5 - $\geq$ $162,800 | 5 | 2,719 |
+
+:::::
+
+
+::::: {.variable-card}
+
+::: {.columns}
+::: {.column width="50%"}
+**Variable Name:** IMM_GSTA
+:::
+::: {.column width="50%"}
+**Concept:**  Immigrant status
+:::
+:::
+
+**Note:**  
+Landed immigrants are permanent residents who have indicated a year of landing in Canada since 1980. Variable derived from LANDING_YEAR, IMDB.
+
+**Source:** Longitudinal Immigration Database (IMDB)
+
+|**Answer Categories**|**Code**|**Frequency**|
+|---------------------|--------|-------------|
+| Landed immigrant | 1 | 1,696 |
+| Non-landed immigrant | 2 | 15,701 |
+| Valid Skip | 6 | 0 |
+| Don't Know | 7 | 0 |
+| Refusal | 8 | 0 |
+| Not Stated | 9 | 12 |
+:::::
+
+
+Variable `pumfid` is just a unique identifier. 
+
+
+```{r chunk_2DA_1119}
+ds <- ds %>% mutate(
+    id = pumfid,
+    province = province, 
+    AGE = as.integer(age_grp),
+    SEX = gender,
+    EMP = ifelse(
+        emp == 2,
+        0,
+        emp
+    ),
+    EDU = g_edu,
+    FAM = g_hcomp, 
+    IMM = ifelse(
+        imm_gsta == 2,
+        0,
+        imm_gsta
+    ),
+    INC = hincquin
+)
+
+ds <- ds %>% filter(
+    SNS < 3,
+    EMP < 3,
+    FAM < 5,
+    IMM < 3
+)
+
+```
+
+**Step 5. Selecting The Variables From Data Set**
+
+```{r chunk_2DA_2119}
+ds <- ds %>% 
+    dplyr::select(id, 
+                  mBanking, SD, FAMSAT, FRISAT, MH, SNS,
+                  province, AGE, SEX, EMP, EDU,
+                  FAM, IMM, INC, wtpg)
+                  
+                  
+```
+
+Size of the dataset: 
+```{r chunk_2DA_3119}
+dim(ds)
+```
+
+
+### EXPLORING DATA 
+ 
+```{r chunk_2DA_4119}
+psych::describe(ds, type = 2)
+```
+
+Seems like it's kind of rare for those that use m-banking to have lower MH scores.
+Descriptive statistics:
+
+```{r chunk_2DA_5119}
+ggplot(data    = ds,
+       aes(x   = SD,
+           y   = wtpg,
+           color = as.factor(MH)))+ 
+  geom_point() +
+  geom_jitter() +  
+  labs( x = "Smartphone Dependency", 
+        y = "Weight", 
+        color = "MH") + 
+  theme_minimal() 
+```
+
+Checking Na's:
+```{r chunk_2DA_6119}
+sum(is.na(ds))
+```
+
+
+```{r chunk_2DA_7119}
+glimpse(ds)
+```
+
+### Exploring Relations
+Visualizng the relationship between Mental Health and M-banking:
+
+```{r chunk_2DA_8119}
+ggplot(data = ds, aes(x = MH, y = wtpg)) +
+            geom_col(
+            aes(fill = as.factor(mBanking)), stat = "identity", color = "black", position = position_dodge(0.9)) +
+            fill_palette("Pastel1") + 
+            xlab("Mental Health") +
+            ylab("Frequencies") + labs(fill = "Mbanking")
+```
+
+
+MH and controls: AGE, SEX, EMP, EDU, FAM, IMM, INC
+
+```{r chunk_2DA_9, fig.width=15, fig.height=10}
+gg_fam <- ggplot(data = ds , aes(MH, fill = as.factor(FAM))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'FAMILY') + fill_palette("Pastel1")
+
+gg_age <- ggplot(data = ds , aes(MH, fill = as.factor(AGE))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'AGE') + fill_palette("Pastel1")
+
+gg_edu <- ggplot(data = ds , aes(MH, fill = as.factor(EDU))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'EDU') + fill_palette("Pastel1")
+
+gg_inc <- ggplot(data = ds , aes(MH, fill = as.factor(INC))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'INC') + fill_palette("Pastel1")
+
+gg_sex <- ggplot(data = ds , aes(MH, fill = as.factor(SEX))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'SEX') + fill_palette("Pastel1")
+
+gg_emp <- ggplot(data = ds , aes(MH, fill = as.factor(EMP))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'EMP') + fill_palette("Pastel1")
+
+gg_imm <- ggplot(data = ds , aes(MH, fill = as.factor(IMM))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'Immigrant') + fill_palette("Pastel1")
+
+
+ggarrange(
+    gg_fam, gg_age, gg_edu, gg_inc, gg_sex, gg_emp, gg_imm,
+    labels = c("FAM", "AGE", "EDU", "INC", "SEX", "EMP", "IMM"),
+    ncol = 3,
+    nrow = 3
+    
+) 
+```
+
+MH and other variables: SD, FAMSAT, FRISAT, SNS 
+
+```{r chunk_2DA_10, fig.width=15, fig.height=10}
+gg_frisat <- ggplot(data = ds , aes(MH, fill = as.factor(FRISAT))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'FRISAT') + fill_palette("Pastel1")
+
+gg_famsat <- ggplot(data = ds , aes(MH, fill = as.factor(FAMSAT))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'FAMSAT') + fill_palette("Pastel1")
+
+gg_sd <- ggplot(data = ds , aes(MH, fill = as.factor(SD))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'SD') + fill_palette("Pastel1")
+
+gg_sns <- ggplot(data = ds , aes(MH, fill = as.factor(SNS))) + geom_bar(position = "fill") + labs(x = "Mental Health", y = "Percentage (fill)", fill = 'SNS') + fill_palette("Pastel1")
+
+ggarrange(
+    gg_frisat, gg_famsat, gg_sd, gg_sns,
+    labels = c("FRISAT", "FAMSAT", "SD", "SNS"),
+    ncol = 2,
+    nrow = 2
+    
+) 
+```
+
+#### Correlation Matrix 
+All variables 
+
+```{r chunk_2DA_11}
+sle <- ds %>% dplyr::select(mBanking, SD, FAMSAT, FRISAT, SNS, AGE, SEX, EMP, EDU, FAM, INC, MH)
+corM <- Hmisc::rcorr(as.matrix(sle))
+reg_corM <- as.matrix(corM$r)
+
+colnames(reg_corM) <- c("mBanking", "SD", "FAMSAT", "FRISAT", "SNS", "AGE", "SEX", "EMP", "EDU", "FAM", "INC", "MH")
+# 
+rownames(reg_corM) <- c("mBanking", "SD", "FAMSAT", "FRISAT", "SNS", "AGE", "SEX", "EMP", "EDU", "FAM", "INC", "MH")
+# 
+corrplot::corrplot(reg_corM, p.mat = corM$P, method = "color", type = "upper", insig = 'label_sig', sig.level = c(0.001, 0.01, 0.05), pch.cex = 0.9, order = 'AOE', tl.col = "black", tl.cex = 1, diag = F, col = corrplot::COL2('PuOr'))
+
+```
+
+`FRISAT` and `FAMSAT` are obviously highly correlated. I'll combine them into a new variable called `RS` for Relationship satisfaction.
+
+```{r chunk_2DA_12}
+ds <- ds %>% mutate(
+    RS = FAMSAT + FRISAT
+)
+
+```
+
+##### Showing that it's ok to replace FAMSAT + FRISAT = RS 
+Using a Likelihood Ratio Test: 
+```{r chunk_2DA_13}
+model_famsatfrisat <- glm(mBanking ~ FAMSAT + FRISAT, 
+                          family = "binomial",
+                          data = ds)
+
+model_rs <- glm(mBanking ~ RS, 
+                          family = "binomial",
+                          data = ds)   
+
+anova(model_rs, model_famsatfrisat, test = "Chisq")               
+```
+
+Since $p > 0.05$, there is no significant difference in model performance. 
+It's better to keep one variable instead of two (simpler model is better).
+
+Continuing with our visualizations, let's see the changes to SD across MH scores. 
+
+```{r chunk_2DA_14}
+ggplot(data  = ds, aes(x = MH, y = SD))+ geom_point(size = 1.2, alpha = .5, position = "jitter") + 
+    geom_smooth(method = lm,
+              se     = FALSE, 
+              col    = "red",
+              size   = 2, 
+              alpha  = .8)+ # to add regression line
+  theme_minimal()
+
+```
+
+There's an almost negative linear relationship there: better mental health is associated with lower dependency on smartphones. 
+This intuitively makes sense. 
+Adding more nuance to this graph, I can see how this relationship changes for people who adopted m-banking and those that didn't. 
+It seems the two relationships are almost identical, at least in direction. 
+
+```{r chunk_2DA_16}
+ggplot(data    = ds,
+       aes(x   = MH,
+           y   = SD,
+           col = as.factor(mBanking)))+ #to add the colours for different classes
+    geom_point(size     = 1.2,
+             alpha    = .8,
+             position = "jitter")+ 
+    #scale_color_manual(name = "MBanking",
+                     #labels = c("No", "Yes"),
+                     #values = c("red", "lightblue")) + #+ ggnewscale::new_scale_color() +
+    geom_smooth(method   = lm,
+              se       = T, 
+              size     = 1.5, 
+              linetype = 1, 
+              alpha    = .7,
+              ) + 
+    scale_color_manual(name = "MBanking",
+                     labels = c("No", "Yes"),
+                     values = c("black", "darkred")) + theme_minimal()
+    
+```
+
+The same type of visualizations can be helpful for other factors in the model.
+Now, I will separate the data into those that have adopted m-banking and those that haven't. 
+Let's look at the differences in familial relationship satisfaction for these two groups across mental health. 
+For m-banking adopters, it seems that those with better mental health (3 or higher) are completely satisfied with their family relationships (blue bar). 
+On the other hand, those that haven't adopted m-banking are either less satisfied or completely unsatisfied (`MH = 5, mBanking = 0` group's largest bar is red, which is `FAMSAT = 1`, the lowest score).
+                  
+```{r chunk_2DA_18, fig.width=15, fig.height=4}
+ds1 <- ds %>% filter(mBanking == 1)
+ds2 <- ds %>% filter(mBanking == 0)
+
+gg5 <- ggplot(data = ds1, aes(x = MH, y = wtpg)) +
+            geom_col(
+            aes(fill = as.factor(FAMSAT)), stat = "identity", color = "black", position = position_dodge(0.9)) +
+            fill_palette("RdBu") + 
+            xlab("Mental Health") +
+            ylab("Weights") + labs(fill = "FAMSAT")
+
+gg6 <- ggplot(data = ds2 %>% filter(mBanking == 0), aes(x = MH, y = wtpg)) +
+            geom_col(
+            aes(fill = as.factor(FAMSAT)), stat = "identity", color = "black", position = position_dodge(0.9)) +
+            fill_palette("RdBu") + 
+            xlab("Mental Health") +
+            ylab("Weights") + labs(fill = "FAMSAT")
+
+ggarrange(gg5, gg6, ncol = 2, labels = c("mBanking = 1", "mBanking = 0"))
+```
+
+It's important to mention that visualizations don't actually tell us the real story. 
+Especially when working with large datasets with more than 10,000 data points. 
+This is simply a somewhat visible pattern that tells me it's worth looking into when I do my statistical analysis. 
+We do the same type of visualization, now measuring social media use. 
+Surprisingly, social media use goes up with better mental health scores for adopters but decreases for non-adopters. 
+
+```{r chunk_2DA_19,fig.width=10, fig.height=4}
+gg7 <- ggplot(data = ds1, aes(x = MH, y = wtpg)) +
+            geom_col(
+            aes(fill = as.factor(SNS)), stat = "identity", color = "black", position = position_dodge(0.9)) +
+            fill_palette("RdBu") + 
+            xlab("Mental Health") +
+            ylab("Weights") + labs(fill = "SNS")
+
+gg8 <- ggplot(data = ds2 %>% filter(mBanking == 0), aes(x = MH, y = wtpg)) +
+            geom_col(
+            aes(fill = as.factor(SNS)), stat = "identity", color = "black", position = position_dodge(0.9)) +
+            fill_palette("RdBu") + 
+            xlab("Mental Health") +
+            ylab("Weights") + labs(fill = "SNS")
+
+ggarrange(gg7, gg8, ncol = 2, labels = c("mBanking = 1", "mBanking = 0"))
+```
+
+Lastly, we do the same with smartphone dependency. 
+It seems that non-adopters are actually more dependent on their smartphones and also (with better mental health).
+
+```{r chunk_2DA_20,fig.width=15, fig.height=4}
+gg9 <- ggplot(data = ds1, aes(x = MH, y = wtpg)) +
+            geom_col(
+            aes(fill = as.factor(SD)), stat = "identity", color = "black", position = position_dodge(0.9)) +
+            fill_palette("RdBu") + 
+            xlab("Mental Health") +
+            ylab("Weights") + labs(fill = "SD")
+
+gg10 <- ggplot(data = ds2 %>% filter(mBanking == 0), aes(x = MH, y = wtpg)) +
+            geom_col(
+            aes(fill = as.factor(SD)), stat = "identity", color = "black", position = position_dodge(0.9)) +
+            fill_palette("RdBu") + 
+            xlab("Mental Health") +
+            ylab("Weights") + labs(fill = "SD")
+
+ggarrange(gg9, gg10, ncol = 2, labels = c("mBanking = 1", "mBanking = 0"))
+```
+
+
+## Modeling 
+I prepare the data for modeling by:
+
+1. Calculating mean-centered values for the numeric columns for easier interpretation since no value has a true zero.
+2. I convert some variables to factors, which are categorical variables with different levels and define various reference points for each for easier modeling practices 
+3. Note that if a variable's reference level is `l`, then all the logistic regression coefficients for other levels are in comparison to level `l`
+
+```{r chunk_2DA_21}
+ds <- ds %>% mutate(
+    MH_c = MH - mean(MH), 
+    SD_c = SD - mean(SD),
+    SNS_f = as.factor(SNS),
+    RS_c = RS - mean(RS),
+    AGE_c = AGE - mean(AGE),
+    SEX_f = as.factor(SEX),
+    EMP_f = as.factor(EMP),
+    EDU_c = EDU - mean(EDU),
+    FAM_f = as.factor(FAM),
+    INC_c = INC - mean(INC),
+    IMM_f = as.factor(IMM),
+    PRVNC = as.factor(province)
+)
+
+ds <- ds %>% 
+    mutate(
+        # SEX 
+        SEX_factor_Fem = relevel(SEX_f, ref = '2'),
+        SEX_factor_Mal = relevel(SEX_f, ref = '1'),
+        # EMP
+        EMP_factor_not = relevel(EMP_f, ref = '0'),
+        EMP_factor_Emp = relevel(EMP_f, ref = '1'),
+        # FAM 
+        FAM_factor_1 = relevel(FAM_f, ref = '1'),
+        FAM_factor_2 = relevel(FAM_f, ref = '2'),
+        FAM_factor_3 = relevel(FAM_f, ref = '3'),
+        FAM_factor_4 = relevel(FAM_f, ref = '4'),
+        # IMM
+        IMM_factor_Imm = relevel(IMM_f, ref = '1'),
+        IMM_factor_non = relevel(IMM_f, ref = '0'),
+        # SNS 
+        SNS_factor_notuse = relevel(SNS_f, ref = '0'),
+        SNS_factor_use = relevel(SNS_f, ref = '1')
+    )
+
+
+```
+
+#### Considering Sampling Clusters
+This dataset was sampled by clustering on provinces. 
+CIUS does not disclose their sample measure in full detail, but it is best practice to consider this sampling design in the model.
+There are multiple ways to do it: 
+
+* Apply the weights to the model in `glm()`; since the dataset is quite large, adding the weights will render everything statistically significant and therefore is not useful for our purposes 
+* Use a survey-specific module like the `survey` package developed by [Thomas Lumley](https://www.rdocumentation.org/packages/survey/versions/4.4-2) to account for survey methods, stratification, framing, sampling strategy and weights. 
+The way you'd do this is: 
+
+```{r chunk_2DA_surveyEx}
+#| eval: false 
+
+library(survey)
+
+# define survey design 
+ds_svy <- svydesign(ids = ~province, weights = ~wtpg, data = ds)
+
+# run survey glm : svyglm()
+model1_svy <- svyglm(
+    mBanking ~ MH_c + SD_c + SNS_factor_use + RS_c + AGE_c + SEX_factor_Fem + ..., 
+    family=stats::gaussian(),
+    start=NULL, rescale=TRUE, deff=FALSE,influence=FALSE)
+
+summary(model1_svy, correlation = FALSE, df.resid=NULL)
+
+```
+
+* Another method is to consider robust standard errors 
+* Lastly, the method I've decided on is to consider this clustering in the model as a group using mixed-effect models 
+
+Let's visualize the distribution of m-banking adoption across provinces for all `MH` scores: 
+
+```{r chunk_2DA_22}
+ds <- ds %>% 
+    mutate(
+        province_f_coded = fct_recode(
+            PRVNC,
+            'NL' = '10',
+            'NS' = '12', 
+            'NB' = '13',
+            'QC' = '24',
+            'ON' = '35', 
+            'MB' = '46', 
+            'SK' = '47', 
+            'AB' = '48', 
+            'BC' = '59'
+        )
+    )
+```
+
+```{r chunk_2DA_23}
+ggplot(ds, aes(province_f_coded, mBanking, color = as.factor(MH))) +
+                  stat_summary(fun = mean, geom = "point") +
+                  stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.4) +
+                  theme_set(theme_bw(base_size = 10)) +
+                  theme(legend.position = "top") +
+                  labs(x = "Province", y = "Observed Probabilty of mobile banking", color = "MH") + theme_minimal()
+
+```
+
+There is clearly some variation in the probabilities of m-banking and the effects of `MH` on this across the provinces. 
+
+### Mathematical Modeling 
+Following the paper, I have these models (I'm skipping over the choise of `RS` instead of `FAMSAT + FRISAT` as it was discussed above): 
+
+**Model 1. Standard Logistic Regression**
+
+$$
+\begin{equation*}
+\begin{split}
+  & \ln\frac{P(Y = 1)}{1 - P(Y = 1)} = \\
+  & \ \beta_0 + \beta_{1} \ MH + \ \beta_2 \ SD + \ \beta_3 \ D_{SNS_0} + \ \beta_4 \ AGE \ + \ \beta_5 \ D_{SEX_m} \\
+  &  + \ \beta_6 \ D_{EMP_0} \ + \ \beta_7 \ EDU + \ \beta_8 \ INC \ + \ \beta_9 \ D_{FAM_1} + \ \beta_{10} \ D_{FAM_3}\\
+  & + \ \beta_{11} \ D_{FAM_4} \ + \ \beta_{12} \ D_{IMM_1} + \ \beta_{13} \ RS + \ \epsilon \\
+\end{split}
+\end{equation*}
+$$
+
+Where $D$ is a dummy variable representing the case that the value of the variable in the index is some specific level. 
+For example, $D_{SNS_0}$ gets a $1$ in every cell where `SNS = 0`. 
+This is modeled in R: 
+
+```{r chunk_2DA_26}
+model1 <- glm(
+    mBanking ~ MH_c + SD_c + SNS_factor_use + RS_c + AGE_c + SEX_factor_Fem + EMP_factor_Emp + EDU_c + FAM_factor_2 + IMM_factor_non + INC_c,
+    data = ds,
+    family = "binomial"
+)
+```
+
+**Model 2. Fixed Effect Logistic Regression**
+
+$$
+\begin{equation*}
+\begin{split}
+  & \ln\frac{P(Y = 1)}{1 - P(Y = 1)} = \\
+  & \ \gamma_{0,j} + u_{0,j} + \beta_{1} \ MH + \ \beta_2 \ SD + \ \beta_3 \ D_{SNS_0} + \ \beta_4 \ AGE \ + \ \beta_5 \ D_{SEX_m}\\
+  &  + \ \beta_6 \ D_{EMP_0} \ + \ \beta_7 \ EDU + \ \beta_8 \ INC \ + \ \beta_9 \ D_{FAM_1} + \ \beta_{10} \ D_{FAM_3}\\
+  & + \ \beta_{11} \ D_{FAM_4} \ + \ \beta_{12} \ D_{IMM_1} + \ \beta_{13} \ RS + \ \epsilon \\
+\end{split}
+\end{equation*}
+$$
+
+This is where `province` only affects the intercept (m-banking). 
+I used the `glmer` function from the `lme4` package. 
+
+```{r chunk_2DA_27}
+model2 <- glmer(
+    mBanking ~ MH_c + SD_c + SNS_factor_use + RS_c + AGE_c + SEX_factor_Fem + EMP_factor_Emp + EDU_c + FAM_factor_2 + IMM_factor_non + INC_c + (1 | province),
+    data = ds,
+    family = binomial(),
+    control = glmerControl(optimizer = "bobyqa")
+)
+```
+
+**Model 3. Random Effect Logistic Regression**
+
+$$
+\begin{equation*}
+\begin{split}
+   & \ln\frac{P(Y = 1)}{1 - P(Y = 1)} = \\
+   & \ \gamma_{0,0} + u_{0,j} + (\gamma_{1,0} + u_{1,j}) \ MH + \ (\gamma_{2,0} + u_{2,j}) \ SD \ + \ (\gamma_{3,0} + u_{3,j}) \ SNS \\
+   & + \ (\gamma_{4,0} + u_{4,j}) \ AGE \ + \ (\gamma_{5,0} + u_{5,j}) \ SEX \ + \ (\gamma_{6,0} + u_{6,j}) EMP \\
+   & + \ (\gamma_{7,0} + u_{7,j}) \ EDU \ + \ (\gamma_{8,0} + u_{8,j}) \ INC \
+    + \ (\gamma_{9,0} + u_{9,j}) \ D_{FAM_1} \\
+   & + \ (\gamma_{10,0} + u_{10,j}) \ D_{FAM_3} \ + \ (\gamma_{11,0} + u_{11,j}) \ D_{FAM_4} \\ 
+   & + \ (\gamma_{12,0} + u_{12,j}) \ IMM_1 \ + \ (\gamma_{13,0} + u_{13,j}) \ RS + \ \epsilon \\
+\end{split}
+\end{equation*}
+$$
+
+This is where `province` only affects everything. 
+This model may not converge (it does in this case, but it takes about 30 minutes with no other processes running on a Macbook Air M2). 
+An easier model that considers random effects may be to just include the random effect on the primary variable `MH` and its related constructs (`model4`). 
+
+
+```{r chunk_2DA_28}
+#| eval: false 
+model3 <- glmer(
+    mBanking ~ MH_c + SD_c + SNS_factor_use + RS_c + AGE_c + SEX_factor_Fem + EMP_factor_Emp + EDU_c + FAM_factor_2 + IMM_factor_non + INC_c + 
+    (1 + MH_c + SD_c + SNS + RS_c + AGE_c + SEX_f + EMP + EDU_c + FAM_2 + IMM_n + 
+    INC_c | province),
+    data = ds,
+    family = binomial(link = "logit"),
+    control = glmerControl(optimizer = "bobyqa"))
+```
+
+For faster speeds, I'll test everything with this model (random):
+```{r chunk_2DA_29} 
+model4 <- glmer(
+    mBanking ~ MH_c + SD_c + SNS_factor_use + RS_c + AGE_c + SEX_factor_Fem + EMP_factor_Emp + EDU_c + FAM_factor_2 + IMM_factor_non + INC_c + 
+    (1 + MH_c + SD_c + SNS_factor_use + RS_c | province),
+    data = ds,
+    family = binomial(link = "logit"),
+    control = glmerControl(optimizer = "bobyqa"))
+```
+
+### Comparing models 
+Since `model3` doesn't run fast and I am using `Quarto` for rendering the code blocks, I decided to use `model4` for comparisons. 
+The values here will be different from the paper, but the ideas are the same. 
+To pick the best model I do: 
+
+* Likelihood Ratio Test to pick between `model1` vs `model2` - the null hypothesis is that there is no significant difference between the models (if you reject this, then you should go with the model that captures more information)
+  * If you reject $H_0$ of LR test, i.e., `model2` wins $\implies$ we compare it to `model4` and we need the Hausman test 
+    * Unfortunately, the Hausman test requires the `plm` package and panel data. To avoid messing the data up again, I coded the calculations manually based on the Hausman formula. This is referenced in the paper. 
+  * If you can't reject $H_0$ of LR test, i.e., `model1` wins, we should just use that as it's simpler 
+
+```{r chunk_2DA_30}
+test_performance(model1, model2)
+```
+
+
+Since `model2` won, we now compare it with `model4`. 
+Hausman test for fixed effects in R is a bit tricky, so, I did it manually following the formula:
+
+1. Extract per-group (province) coefficients for both models and convert them to data frames 
+```{r chunk_2DA_31}
+coefs_fixed <- coef(model2)
+coefs_rando <- coef(model4)
+
+coefs_fixed_df <- as.data.frame(coefs_fixed$province)
+coefs_rando_df <- as.data.frame(coefs_rando$province)
+
+```
+
+2. Subtract Random Effects model coefficients from Fixed Effect model, per province. This gives you the core term of the Hausman test: 
+```{r chunk_2DA_32}
+coefs_diff <- coefs_fixed_df - coefs_rando_df
+coef_diffs_matrix <- as.matrix(coefs_diff)
+
+```
+
+3. Estimate the difference in the variance-covariance matrices of the coefficient estimates. 
+```{r chunk_2DA_33}
+V_diff <- as.matrix(vcov(model2) - vcov(model4))
+
+```
+
+What I need is:  
+
+$$
+H = (\hat{\beta_{F}} - \hat{\beta_{R}}) \cdot V^{-1} \cdot (\hat{\beta_{F}} - \hat{\beta_{R}})^T
+$$
+
+Just checking that the matrix multiplications make sense: 
+```{r chunk_2DA_34}
+dim(t(coef_diffs_matrix))
+dim(solve(V_diff))
+dim(coef_diffs_matrix)
+
+
+```
+
+They do! So, calculate $H$:
+
+```{r chunk_2DA_35}
+H <- coef_diffs_matrix %*% solve(V_diff) %*% t(coef_diffs_matrix)
+
+```
+
+
+This is the actual critical $\chi^2$ value at degrees of freedom 13 (for 14 covariates), in fact, I can check: 
+
+```{r chunk_2DA_36}
+qr(V_diff)$rank
+
+```
+
+```{r chunk_2DA_37}
+chisq_critical <- qchisq(p = .05, df = 13, lower.tail = FALSE)
+chisq_critical
+```
+
+If $H1 > \chi^2$ then reject the null hypothesis that says the fixed model is better.
+```{r chunk_2DA_38}
+H > chisq_critical #reject H0: the fixed model is better.  
+```
+
+The p-value: 
+```{r chunk_2DA_39}
+pchisq(H, df = 13, lower.tail = FALSE)
+```
+
+Ok, we can't reject this hypothesis - therefore, the fixed model is better. 
+Another way to check:
+
+```{r chunk_2DA_40}
+anova(model2, model4)
+```
+
+
+The models are basically the same - which means, go with the simpler one! 
+So, best model is `model2`. 
+Now adding interaction terms to test the hypotheses of study 2, which are: 
+
+* Mental Health significantly affects mobile banking adoption.
+* Relationship Satisfaction moderates the effect of Mental Health on adoption.
+* Smartphone Dependency moderates the effect of Mental Health on adoption.
+* Social Media use moderates the effect of Mental Health on adoption.
+
+
+```{r chunk_2DA_41}
+model2_int <- glmer(
+    mBanking ~ MH_c + SD_c + SNS_factor_use + RS_c + AGE_c + SEX_factor_Fem 
+    + EMP_factor_Emp + EDU_c + FAM_factor_2 + IMM_factor_non + INC_c 
+    + MH_c:RS_c + MH_c:SD_c + MH_c:SNS_factor_use 
+    + (1 | province),
+    data = ds,
+    family = binomial(),
+    control = glmerControl(optimizer = "bobyqa"))
+```
+
+Printing both odds ratios and log-odds versions using two different summary functions: 
+
+```{r chunk_2DA_42}
+summ(
+    model2,
+    scale = F,
+    pvals = T,
+    exp = T, 
+    digits = 3,
+    #part.corr = T, #Print partial (labeled "partial.r") and semipartial (labeled "part.r")
+    #confint = getOption("summ-confint", FALSE),
+    #ci.width = getOption("summ-ci.width", 0.95),
+    #vifs = T
+)
+```
+
+```{r chunk_2DA_43}
+summary(model2)
+```
+
+```{r chunk_2DA_44}
+summ(
+    model2_int,
+    scale = F,
+    pvals = T,
+    exp = T, 
+    digits = 3,
+    #part.corr = T, #Print partial (labeled "partial.r") and semipartial (labeled "part.r")
+    #confint = getOption("summ-confint", FALSE),
+    #ci.width = getOption("summ-ci.width", 0.95),
+    #vifs = T
+)
+```
+
+
+```{r chunk_2DA_45}
+summary(model2_int)
+```
+
+
+Also calculating the confidence interval for the variances of each model (we should really only care about the intercept variance, maybe MH):
+
+```{r chunk_2DA_46}
+#| eval: false 
+round(confint(model2),3)
+```
+
+![](/images/CIs.png)
+
+And the random effects for provinces (for visualization later):
+
+```{r chunk_2DA_47}
+#| eval: false 
+ranefs_ <- ranef(model2)
+```
+
+### Marginal Effects 
+
+First, let's see which model is better: 
+
+```{r chunk_2DA_48}
+anova(model2, model2_int)
+
+```
+
+```{r chunk_2DA_49}
+test_performance(model2, model2_int)
+```
+
+Since `model2` is simpler, and they're not different, I'll go with that. 
+Average marginal effects are: 
+
+```{r chunk_2DA_50}
+margins_summary(model2)
+```
+
+
+### Fixed Effects of Provinces Visualized
+To finish this discussion, I'll visualize the fixed effects of provinces. 
+The y-axis shows the intercept shift (effect) for each province.
+A higher value on the y-axis (positive effect) means that after controlling for all variables, people in that province have higher baseline odds of using m-banking.
+A lower value (negative effect) means lower baseline odds.
+Since **Quebec (QC)** and **British Columbia (BC)** have the highest positive effects, we can say mobile banking is more common there, even after accounting for mental health and other variables.
+On the opposite end, **Alberta (AB)** and **Newfoundland & Labrador (NL)** have the lowest random effects, meaning adoption is lower in these provinces.
+
+
+```{r chunk_2DA_24}
+prov_ <- c('NL', 'NS', 'NB', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC')
+prov_n <- c(10, 12, 13, 24, 35, 46, 47, 48, 59)
+
+# random effects are from model 2 
+ranefs_ <- c(-0.029445800, 0.001523515,-0.034782017, 0.308732844,-0.132427568,-0.129533645,-0.047807245,-0.001728474,0.053000416)
+ranefs_ <- round(ranefs_, 4)
+
+d_graph <- cbind(prov_, prov_n, ranefs_)
+d_graph <- as.data.frame(d_graph)
+
+provs_fullnames <- c('Newfoundland and Labrador', 'Nova Scotia', 'New Brunswick','Quebec', 'Ontario', 'Manitoba', 'Saskatchewan', 'Alberta', 'British Columbia')
+
+```
+
+
+```{r chunk_2DA_25}
+ggplot(data = d_graph, aes(x = prov_n, y = ranefs_, label = c('NL', 'NS', 'NB', 'QC', 'ON', 'MB', 'SK', 'AB', 'BC'))) +   
+    geom_point(size = 2, alpha = .5) + 
+    geom_text(check_overlap = TRUE) + 
+    labs(
+        x = "Province Code",
+        y = "Random Effect",
+        fill = "Province"
+    ) + geom_label(aes(fill = provs_fullnames), colour = "white", fontface = "bold") + geom_line(linetype = "dashed") + 
+    scale_color_manual(values = provs_fullnames, name = "province")
+   
+```
+

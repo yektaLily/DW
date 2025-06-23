@@ -1,0 +1,21 @@
+---
+title: "About"
+about:
+    template: marquee
+    links:
+        - icon: github
+        - text: Github
+        - href: github.com/yektaLily 
+---
+
+## About Me 
+
+Hi! My Name is Yekta (read exactly how you write it), my pronouns are She/Her. I was born in Tehran, Iran. Since I was a kid, I've always loved learning and adventures. Movies are my first passion! After that, it's TV shows, music, gadgets and technology, books, writing and studying! Yes! I actually like studying! 
+
+I quickly found out I was much better at Math and Physics than Science and any other field that required memorizing facts (History). I wanted to be an astronaut, then an actress, then a filmmaker, then a writer, then a super model (plans didn't work out, I stopped growing taller at 14!), then a robotics engineer, then a computer engineer, then an electrical engineer, then a photographer, etc. I thought actor was the one that made the most sense, since I wanted to be so many things! At least with acting, I could pretend to be all of those things!
+
+Well, I chose mathematics in highschool, and since I was good at it, I continued with mathematics to college. Big Mistake (For Me)! Studying math in undergrad at University of Tehran was like studying Chinese, Greek, Russian and Arabic at the same time. You don't see numbers after Calculus 2, which you take in the second semester/term. All abstract ideas, proofs, theorems, n-dimensional spaces and curves that curve inside of themselves! "I should have studied Accounting!" (Which I did, btw! I actually took an entire accounting training course outside of university and found it to be sould-crushingly boring, no offense to all accountants.)
+
+Ok, so if math isn't about numbers and I don't actually want to work with numbers - then where do I go?! So, thankfully, at UT, I was able to take most of my electives courses from the two other majors in the math department: computer science and statistics. This was the turning point for me. "Here's where that theory applies, you know, the one you kept asking why you're even learning its proof"... So I figured I should change my major. Mathematics had taught me nothing but how to think, how to analyze, how to be logical and how important it was to know why stuff made sense... so really, nothing much! I didn't even realize how much studying mathematics had taught me until years later. 
+
+I still changed my major for graduate school, and decided to try Industrial & Systems Engineering, with a specialization on Macrosystems engineering. I taught myself Python and SQL, I did very well during graduate school with my courses, I worked on research projects and had the best time writing my thesis. So I thought, wow, I actually like all of this! Why not do a PhD? And here I am! I love learning, getting deep in a topic, planning a project from the start to the end.  

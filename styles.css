@@ -1,0 +1,14 @@
+/* css styles */
+.future-idea-box {
+  border: 2px solid var(--quarto-hl-header-color, #447099); /* Uses Quarto header color variable or fallback */
+  border-radius: 8px;
+  padding: 1em;
+  margin: 1em 0;
+  background: #f9f9fc;
+}
+.future-idea-title {
+  font-weight: bold;
+  color: var(--quarto-hl-header-color, #447099);
+  margin-bottom: 0.5em;
+  font-size: 1.1em;
+}

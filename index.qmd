@@ -1,0 +1,13 @@
+---
+title: "Yekta's Dissertation Website"
+
+---
+
+Hi! Welcome to my dissertation website. 
+I started my PhD in Management Science & Engineering at University of Waterloo in August 2021. 
+This website will walk you through my entire project, which took me over 3 years to finish. 
+I'm hoping this project can be used by others as inspiration, and hopefully, as a portfolio project for my own! 
+I find a lot of this stuff fun! 
+I'm also hoping to make everything super accessible to everyone, even if you're coming from no background in Statistics/Math/Computer Science. 
+
+

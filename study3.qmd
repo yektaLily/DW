@@ -1,0 +1,70 @@
+---
+title: "Smartphone VS Smartwear" 
+author: "Yekta Amirkhalili"
+date: "today"
+format: 
+  html: 
+    code-fold: false
+    code-tools: true
+    self-contained: false
+    execute:
+      eval: true 
+      echo: true
+      warning: false
+      message: false
+      error: false
+      results: 'asis'
+    #css: style.css
+---
+<!-- CSS CHANGES -->
+<style>
+.quarto-title h1.title {
+  font-size: 1.5rem; 
+}
+
+h2{
+    font-size: 1.2rem;
+    background-color:rgba(128, 170, 156, 0.48);
+}
+
+.future-idea-box {
+  border: 2px solid var(--quarto-hl-header-color, #86bdab); /* Uses Quarto header color variable or fallback */
+  border-radius: 8px;
+  padding: 1em;
+  margin: 1em 0;
+  background: #f9f9fc;
+}
+.future-idea-title {
+  font-weight: bold;
+  color: var(--quarto-hl-header-color,rgb(111, 172, 152));
+  margin-bottom: 0.5em;
+  font-size: 1.1em;
+}
+
+</style>
+<!-- CSS CHANGES -->
+
+
+## Do Devices Change How We Use Mobile Banking?
+In this chapter, I explore something that hasn't really been looked at before: Does the type of device someone uses affect how they adopt mobile banking?
+
+In real life, using a smartphone is very different from using a smart wearable device like a smartwatch. 
+These devices have different features, screen sizes, and even different ways users interact with them.
+So, I wanted to find out:
+
+> Do trust, security, and time-saving value of m-banking apps affect people differently depending on whether they use a smartphone or a wearable?
+> Do demographics like age, gender, or income play a different role across devices?
+
+I used survey data from over 18,000 people in Canada and ran a set of logistic regression models. 
+I grouped people based on whether they use just a smartphone or both a smartphone and a wearable.
+That's really because you don't use a smart wearable device as a standalone device.
+What I found is that device type really matters:
+
+* People who use smartphones care more about trust and security.
+* In fact, people seem to perceive smartphones as more secure (they probably are?).
+* People who use wearables care more about saving time and convenience.
+* Some demographic factors (like education or age) influence adoption in different ways based on the device.
+
+This work shows that mobile banking adoption isn't one-size-fits-all. 
+If we want to understand how people really use these tools, and how banks should design better apps; we need to look at the devices they're using too.
+By "we" I mean banks and researchers alike! 
