@@ -86,8 +86,6 @@ Here are my hypotheses:
 Note that not all libraries may be utilized. 
 The most important ones are `dplyr`, `lme4`, `tidyr`, `lavaan`, `ggplot2`, `psych`, `corrr`, `haven`, `poLCA` and any related libraries to these. 
 ```{r chunk_3DA_1}
-#| echo: false 
-
 library(corrr)
 library(psych)
 library(lavaan)
@@ -157,7 +155,14 @@ I first started by reading the entire PUMF file available.
 This gives you information on how the survey was set up, why, and how things were measured. 
 Then, I looked at the individual survey questions to see the available data, and how they were measured. 
 In general, questions are measured numerically were answeres follow as such:
-> Yes : 1, No : 2, Valid Skip: 6, Don't Know: 7, Refusal: 8, Not Stated: 9 
+
+> Yes : 1
+> No : 2   
+> Valid Skip: 6
+> Don't Know: 7
+> Refusal: 8
+> Not Stated: 9 
+
 Of course this differs question-by-question as some questions have other answer categories and some questions (which were note used in my study) asked for numerical input from the participants (like how much did you spend online last year).
 To help readers understand the data, I will include the question exactly as it appears in the CIUS 2022 PUMF Data Dictionary with corresponding answer choices and codes. 
 These will be in a blue-bordered box, and will include the Variable name (on the PUMF file), Concept, Question Body and Answers. 
@@ -203,6 +208,7 @@ ds0 <- ds00
 
 
 ### Constructing Model Variables 
+
 - Renaming variables 
 - Cleaning data: delete the skips and such for both categorical and numerical variables 
 - Verifying that our measure of latent constructs are strong enough 
@@ -292,6 +298,7 @@ Information derived from age of persons in household.
 :::
 
 **Question Text/Note:**  
+
 Refers to current gender which may be different from sex assigned at birth and may be different from what is indicated on legal documents. For data quality and confidentiality
 reasons, and because of the small population being measured, the dissemination of data according to ’Non binary’ Gender is not possible for this statistical program. So, this release uses a gender variable with only two categories. This variable is derived by looking at a large number of demographic characteristics from the respondent, it allows us to disseminate data on Gender that is reliable and unbiased.
 
@@ -368,6 +375,7 @@ reasons, and because of the small population being measured, the dissemination o
 :::
 
 **Question Text/Note:**  
+
 Information derived using HINC. 
 In order to obtain equal weighted counts in each category, cases with incomes equal to the category cutoffs were randomly assigned to one of the two categories on either side of the cutoff.
 
@@ -500,24 +508,27 @@ Did you use:
 
 CIUS's Microdata User Guide has a section (section 4. Concepts and Defintions) but it does not include a definition for Internet connected smart wearable devices. 
 Using the internet, some examples of these smart wearable devices are: 
-- Smart glasses 
-- Smart watch 
-- Fitness Trackers 
-- Smart Shirt 
-- GPS devices (SGPS/GPRS Body Control)
-- Bluetooth Key Trackers 
-- Smart Belts 
-- Smart Rings 
-- Smart Bracelets 
-- Virtual Reality devices 
-- Smart clothing 
+
+* Smart glasses 
+* Smart watch 
+* Fitness Trackers 
+* Smart Shirt 
+* GPS devices (SGPS/GPRS Body Control)
+* Bluetooth Key Trackers 
+* Smart Belts 
+* Smart Rings 
+* Smart Bracelets 
+* Virtual Reality devices 
+* Smart clothing 
 
 More specific to Canada, according to [Ingenium.ca](https://ingenium.ca/scitech/en/exhibitions/wearable-tech/), the top devices are:
-- Smartwatches (Apple Watch, Samsung Galaxy Watch and Fitbits)
-- Fitness Trackers (Fitbit, Garmin)
-- Health Monitoring Devices (continuous glucose monitors)
+
+* Smartwatches (Apple Watch, Samsung Galaxy Watch and Fitbits)
+* Fitness Trackers (Fitbit, Garmin)
+* Health Monitoring Devices (continuous glucose monitors)
 
 Also true from CIUS 2020's report: 
+
 > In addition, 14% of Canadians used Internet-connected wearable smart devices, such as a smart watch, Fit Bit or glucose monitoring device 
 
 It's safe to assume that smart wearables most definitely include smartwatches. 
@@ -1045,6 +1056,7 @@ This increases measurement reliability.
 Here are the steps of CFA: 
 
 **Step 1. Reliability Check**
+
 Using Cronbach's Alpha, I check the internal consistency of the items. 
 Usually, if $\alpha > 0.7$, the items are measuring the same idea.
 
@@ -1059,6 +1071,7 @@ alph$total$raw_alpha
 Which means the measurement is strong. 
 
 **Step 2. Exploratory Factor Check**
+
 With Parallel Analysis, I can decide how many factors to extract. 
 
 ```{r}
@@ -1085,6 +1098,7 @@ You only do these things if you think the app is not secure or you're worried ab
 So, I'll keep these factors and decide if something should be combined or dropped from CFA results. 
 
 **Step 3. Confirmatory Factor Analysis**
+
 The mathematical model is 
 $$
 X_i = \lambda_i PSEC_i + \epsilon_i
@@ -1135,6 +1149,7 @@ The higher the values the better (and significant).
 My results are excellent for now, but, it's also good to check for residuals and correlations:
 
 **Step 4. Are Items Correlated?**
+
 ```{r}
 modindices(compatibility_fac, sort = TRUE, minimum.value = 10)
 ```
@@ -1146,6 +1161,7 @@ Since my analysis so far shows strong fit (above 90% CFI), I stop here.
 However, there's room for improvement! 
 
 **Step 5. Check Sample-sized control RMSEA**
+
 Since my sample size is quite large, the RMSEA is affected. 
 In fact, all the metrics (especially $\chi^2$) are. 
 So, I'll calculate the sample-sized normalized RMSEA:
@@ -1156,10 +1172,11 @@ fitmeasures(compatibility_fac, "rmsea") / sqrt(18552)
 
 And check the reliability of the model: 
 ```{r}
-#reliability(compatibility_fac)
+# reliability(compatibility_fac) --- 82%
 ```
 
 **Step 6. Subgroup Analysis**
+
 Before we define `PSEC`, I have to figure out how many different categories I want. 
 The smallest would be 2: high and low. 
 I want to check for unobserved subgroups/subclasses. 
@@ -1184,11 +1201,13 @@ Essentially, I'm grouping people into classes based on their security attitudes 
 Let's check the 2 classes results.
 How to interpret the results: 
 
-- First, $Pr(1)$ is probability the person in class $x$ picks 1 for an item (1 here is the previous 0). So: 
+* First, $Pr(1)$ is probability the person in class $x$ picks 1 for an item (1 here is the previous 0). So: 
 
 > $SEC_RES_LOC
->               Pr(1), class 1: 0.68 
->               Pr(2), class 2: 0.11
+> ------------
+> Pr(1), class 1: 0.68 
+> 
+> Pr(2), class 2: 0.11
 
 Means people in class 1 are more likely to not restrict their location (`SEC_RES_LOC = 0` has a higher chance in class 1). 
 This can just be people with high and low security tolerance. 
@@ -1214,6 +1233,7 @@ data.frame(
 This is telling me PSEC should have 4 levels. 
 
 **Step 7. Calculate Perceived Security**
+
 Another way to define `PSEC` is to use Item Response Theory (1 parameter logistic model, Rasch Model). 
 This will give a continous value for `PSEC`, which is preferrable for my analysis. 
 Each item shares the same slope and I estimate 
@@ -1229,8 +1249,9 @@ So, in my example, how high/low does the person's security perception have to be
 > Note: IF PSEC = b, then the person has a 50-50 chance of agreeing. 
 
 Bottom line:
-- If an item has high threshold, only those with high perceived security agree with it. 
-- If an item has low thresholds, most agree with. 
+
+* If an item has high threshold, only those with high perceived security agree with it. 
+* If an item has low thresholds, most agree with. 
 
 So, let's define `PSEC`:
 ```{r}
@@ -1248,7 +1269,6 @@ We find the factor scores (`fscores()`), otherwise known as latent trat scores, 
 Scores are usually centered around 0, and the more negative values are lower scores. 
 
 ```{r}
-
 coef(irt_model, simplify=TRUE)
 ```
 
@@ -1270,9 +1290,10 @@ summary(wrk_ds$PSEC)
 
 ## Build Datasets for Modeling 
 So, I need 3 different datasets for modeling: 
-- Full Data: includes everything 
-- PHON-only Data: only smartphone users 
-- WEAR-only Data: only smartwear users 
+
+* Full Data: includes everything 
+* PHON-only Data: only smartphone users 
+* WEAR-only Data: only smartwear users 
 
 Let's separate the data: 
 ```{r}
@@ -1418,10 +1439,15 @@ model_full_fixedeffect <- glmer(
 )
 ```
 
+
 > Warning :non-integer #successes in a binomial glm!
+> 
 > Warning :failure to converge in 10000 evaluations
+> 
 > Warning :convergence code 4 from Nelder_Mead: failure to converge in 10000 evaluations
+> 
 > Warning :unable to evaluate scaled gradient
+> 
 > Warning :Model failed to converge: degenerate  Hessian with 1 negative eigenvalues
 
 
@@ -1573,9 +1599,10 @@ calc_wald_test <- function(model1, model2, variable_name){
 ```
 
 Here's how you do this: 
-- Get the results for FullData vs PHON
-- Get the results for FullData vs WEAR
-- Get the results for PHON vs WEAR
+
+* Get the results for FullData vs PHON
+* Get the results for FullData vs WEAR
+* Get the results for PHON vs WEAR
 
 ```{r}
 coefs_ <- c('AGE_f1', 'AGE_f3','AGE_f4','AGE_f5','AGE_f6',
@@ -1624,7 +1651,6 @@ for (res in results) {
 ```
 
 ## Bonus Visualizations 
-
 
 ```{r fig.width=15, fig.height=6}
 age_gg <- ggplot(wrk_ds_fulldata %>%
@@ -1724,8 +1750,8 @@ eff_gg <- ggplot(wrk_ds_fulldata %>%
 
 
 ggarrange(age_gg, sex_gg, edu_gg, income_gg, eff_gg, trst_gg, sec_gg,
-          ncol = 4, nrow = 2) #,
-         # labels = c("AGE", "EDU", "TRST", "SEC_CN"))
+          ncol = 4, nrow = 2) 
+         
 ```
 
 
